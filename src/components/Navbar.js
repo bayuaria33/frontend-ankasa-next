@@ -1,35 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
 import { BiLogInCircle } from "react-icons/bi";
+import { BiLogOutCircle } from "react-icons/bi";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/router";
+import jwtDecode from "jwt-decode";
+
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const Navbar = () => {
+  const router = useRouter();
+  const [token, setToken] = useState(null);
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [photo, setPhoto] = useState(
+    "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
+  );
+
+  const logout = () => {
+    // remove all cookies
+    cookies &&
+      Object.keys(cookies).forEach((cookieName) => removeCookie(cookieName));
+    router.reload();
+  };
+
+  useEffect(() => {
+    if (cookies.accessToken) {
+      setToken(jwtDecode(cookies.accessToken));
+    }
+  }, [cookies]);
+  useEffect(() => {
+    if (token) {
+      setPhoto(token.photo);
+    }
+  }, [token]);
+
   return (
     <nav className="flex w-full border-b p-5 items-center align-middle border-gray-200 bg-white md:justify-between justify-between">
-      <div
-        className={`flex bg-white text-black text-4xl ${poppins.className} `}
-      >
-        <Image src="/plane.svg" width={36} height={36} alt="logo" />
-        <p>Ankasa</p>
-      </div>
+      <Link href={"/"}>
+        <button
+          className={`flex bg-white text-black text-4xl ${poppins.className} `}
+        >
+          <Image src="/plane.svg" width={36} height={36} alt="logo" />
+          <p>Ankasa</p>
+        </button>
+      </Link>
       <div className="md:flex md:items-center">
         <ul className="lg:flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white hidden mx-10">
           <li>
-            <a
-              href="#"
-              className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue"
-            >
-              Find Ticket
-            </a>
+            <Link href={"/"}>
+              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
+                Find Ticket
+              </p>
+            </Link>
           </li>
           <li>
-            <a
-              href="#"
-              className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue"
-            >
-              My Bookings
-            </a>
+            <Link href={"/profile/booking"}>
+              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
+                My Bookings
+              </p>
+            </Link>
           </li>
         </ul>
         <div className="relative hidden md:block mx-10">
@@ -57,14 +87,40 @@ const Navbar = () => {
           />
         </div>
 
-        <Link href={"/auth/register"}>
-          <BiLogInCircle size={32} className="md:hidden text-ankasa-blue"/>
-        </Link>
-        <Link href={"/auth/register"}>
-          <button className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10">
-            Sign Up
-          </button>
-        </Link>
+        {token ? (
+          <div className="flex text-black text-sm">
+            <Image
+              src={photo}
+              width={56}
+              height={56}
+              alt="userphoto"
+              className="border-2 border-ankasa-blue rounded-full max-h-14"
+            />
+            <button
+              className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white"
+              onClick={logout}
+            >
+              Sign Out
+            </button>
+            <button className="mx-2 md:hidden" onClick={logout}>
+              <BiLogOutCircle
+                size={32}
+                className="md:hidden text-ankasa-blue"
+              />
+            </button>
+          </div>
+        ) : (
+          <>
+            <Link href={"/auth/register"}>
+              <BiLogInCircle size={32} className="md:hidden text-ankasa-blue" />
+            </Link>
+            <Link href={"/auth/register"}>
+              <button className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white">
+                Sign Up
+              </button>
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

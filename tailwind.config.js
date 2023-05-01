@@ -14,6 +14,7 @@ module.exports = {
       },
       colors: {
         "ankasa-blue": "#2395FF",
+        "ankasa-grey": "#F5F6FA",
       },
     },
   },

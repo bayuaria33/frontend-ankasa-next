@@ -11,7 +11,7 @@ export default function Landing() {
         <title>Ankasa App Landing</title>
       </Head>
       <main
-        className={`flex-col flex min-h-screen pt-6 px-2 ${poppins.className} bg-white`}
+        className={`flex-col flex min-h-screen pt-6 px-2 ${poppins.className} bg-ankasa-grey`}
       >
         <input type="text"
           id="search-navbar"
