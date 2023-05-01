@@ -48,7 +48,7 @@ const Navbar = () => {
       <div className="md:flex md:items-center">
         <ul className="lg:flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white hidden mx-10">
           <li>
-            <Link href={"/"}>
+            <Link href={"/ticket"}>
               <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
                 Find Ticket
               </p>
@@ -97,7 +97,7 @@ const Navbar = () => {
               className="border-2 border-ankasa-blue rounded-full max-h-14"
             />
             <button
-              className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white"
+              className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white shadow-lg font-semibold"
               onClick={logout}
             >
               Sign Out
@@ -115,7 +115,7 @@ const Navbar = () => {
               <BiLogInCircle size={32} className="md:hidden text-ankasa-blue" />
             </Link>
             <Link href={"/auth/register"}>
-              <button className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white">
+              <button className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white shadow-lg font-semibold">
                 Sign Up
               </button>
             </Link>

@@ -11,7 +11,7 @@ import Image from "next/image";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
-export default function Landing() {
+export default function Profile() {
   const [photo, setPhoto] = useState(
     "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
   );

@@ -6,7 +6,6 @@ import { BsFillStarFill } from "react-icons/bs";
 import { BsFillGearFill } from "react-icons/bs";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import { BsChevronRight } from "react-icons/bs";
-import { BsChevronDown } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa";
 
 import { useState } from "react";
@@ -14,14 +13,14 @@ import Image from "next/image";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
-export default function Landing() {
+export default function Booking() {
   const [photo, setPhoto] = useState(
     "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
   );
   return (
     <Layout>
       <Head>
-        <title>Ankasa App Profile</title>
+        <title>Ankasa App My Bookings</title>
       </Head>
       <main
         className={`md:flex-row md:flex min-h-screen p-6 px-2 ${poppins.className} bg-ankasa-grey text-black`}
