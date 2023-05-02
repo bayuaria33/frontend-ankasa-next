@@ -4,6 +4,8 @@ import { Poppins } from "next/font/google";
 import Link from "next/link";
 import { BiLogInCircle } from "react-icons/bi";
 import { BiLogOutCircle } from "react-icons/bi";
+import { BsEnvelope } from "react-icons/bs";
+import { BsBell } from "react-icons/bs";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import jwtDecode from "jwt-decode";
@@ -46,22 +48,7 @@ const Navbar = () => {
         </button>
       </Link>
       <div className="md:flex md:items-center">
-        <ul className="lg:flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white hidden mx-10">
-          <li>
-            <Link href={"/ticket"}>
-              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
-                Find Ticket
-              </p>
-            </Link>
-          </li>
-          <li>
-            <Link href={"/profile/booking"}>
-              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
-                My Bookings
-              </p>
-            </Link>
-          </li>
-        </ul>
+        {/* search */}
         <div className="relative hidden md:block mx-10">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <svg
@@ -82,13 +69,31 @@ const Navbar = () => {
           <input
             type="text"
             id="search-navbar"
-            className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
             placeholder="Search..."
           />
         </div>
+        <ul className="lg:flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white hidden mx-5">
+          <li>
+            <Link href={"/ticket"}>
+              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
+                Find Ticket
+              </p>
+            </Link>
+          </li>
+          <li>
+            <Link href={"/profile/booking"}>
+              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
+                My Bookings
+              </p>
+            </Link>
+          </li>
+        </ul>
 
         {token ? (
-          <div className="flex text-black text-sm">
+          <div className="flex text-black text-sm items-center pr-10">
+            <BsEnvelope color="black" size={24} className="mx-10" />
+            <BsBell color="black" size={24} className="mx-10" />
             <Link href={"/profile"}>
               <Image
                 src={photo}
@@ -98,12 +103,7 @@ const Navbar = () => {
                 className="border-2 border-ankasa-blue rounded-full max-h-14"
               />
             </Link>
-            <button
-              className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white shadow-lg font-semibold"
-              onClick={logout}
-            >
-              Sign Out
-            </button>
+
             <button className="mx-2 md:hidden" onClick={logout}>
               <BiLogOutCircle
                 size={32}

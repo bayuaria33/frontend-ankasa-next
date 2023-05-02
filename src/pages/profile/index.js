@@ -10,19 +10,28 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
+import { useRouter } from "next/router";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Profile() {
+  const router = useRouter();
   const [token, setToken] = useState(null);
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [photo, setPhoto] = useState(
     "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
   );
   const [fullname, setFullname] = useState("name");
-  const [email, setEmail] = useState('email')
-  const [city, setCity] = useState('City')
-  const [country, setCountry] =useState('Country')
+  const [email, setEmail] = useState("email");
+  const [city, setCity] = useState("City");
+  const [country, setCountry] = useState("Country");
+
+  const logout = () => {
+    // remove all cookies
+    cookies &&
+      Object.keys(cookies).forEach((cookieName) => removeCookie(cookieName));
+    router.push("/");
+  };
 
   useEffect(() => {
     if (cookies.accessToken) {
@@ -32,8 +41,8 @@ export default function Profile() {
   useEffect(() => {
     if (token) {
       setPhoto(token.photo);
-      setFullname(token.fullname)
-      setEmail(token.email)
+      setFullname(token.fullname);
+      setEmail(token.email);
     }
   }, [token]);
   return (
@@ -59,7 +68,9 @@ export default function Profile() {
               Select Photo
             </button>
             <p className="font-semibold">{fullname}</p>
-            <p className="text-sm text-gray-500">{city}, {country}</p>
+            <p className="text-sm text-gray-500">
+              {city}, {country}
+            </p>
             <div className="w-full h-24 mt-2 pt-2">
               <p className="text-sm font-bold ml-2">Cards</p>
               <div className="w-full h-16 mt-2 bg-ankasa-blue rounded-xl p-3">
@@ -85,7 +96,10 @@ export default function Profile() {
               <p className="font-bold">Settings</p>
               <BsChevronRight color="grey" size={20} />
             </div>
-            <div className="w-full h-8 mt-2 flex-row flex p-2 items-center justify-between hover:text-ankasa-blue">
+            <div
+              className="w-full h-8 mt-2 flex-row flex p-2 items-center justify-between hover:text-red-400 hover:border-2 border-red-400"
+              onClick={logout}
+            >
               <BsFillDoorOpenFill color="grey" size={20} />
               <p className="font-bold">Logout</p>
               <BsChevronRight color="grey" size={20} />

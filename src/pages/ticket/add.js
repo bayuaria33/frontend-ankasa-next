@@ -5,10 +5,11 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { MdWarning } from "react-icons/md";
 import { MdCheckCircleOutline } from "react-icons/md";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/router";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Ticket() {
+  const router = useRouter();
   return (
     <Layout>
       <Head>
@@ -17,14 +18,13 @@ export default function Ticket() {
 
       <main className={` ${poppins.className} bg-ankasa-grey text-black`}>
         {/* top */}
-        {/* TODO */}
-        {/* <div className="h-44 w-full bg-ankasa-blue rounded-b-2xl px-6 flex flex-row items-center justify-between">
-        </div> */}
+        <div className="h-44 w-full bg-ankasa-blue rounded-b-2xl px-6 flex flex-row items-center justify-between">
+        </div>
         {/* content */}
-        <div className="md:flex-row md:flex h-full p-6 px-2">
+        <div className="md:flex-row md:flex h-full p-6 px-2 -mt-36">
           <div className="md:w-3/5 md:h-full mx-4 rounded-xl p-2 ">
             {/* Contact detail */}
-            <p className="text-lg font-bold text-BLACK">
+            <p className="text-lg font-bold text-white">
               Contact Person Detail
             </p>
             <div className="md:w-full md:h-auto bg-white rounded-xl mt-2">
@@ -143,20 +143,31 @@ export default function Ticket() {
               </div>
             </div>
             <div className="flex w-full h-auto justify-center">
-              <button className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 w-1/2 shadow-lg ">
+              <button
+                className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 w-1/2 shadow-lg "
+                onClick={() => {
+                  router.push("/ticket/payment");
+                }}
+              >
                 Proceed to Payment
               </button>
             </div>
           </div>
 
           <div className="md:w-2/5 md:h-full mx-4 mt-2 md:mt-0 rounded-xl p-2 ">
-            <div className="w-full flex justify-between px-2">
-              <p className="text-lg font-bold text-BLACK">Flight Detail</p>
+            <div className="w-full flex justify-between px-2 items-center">
+              <p className="text-lg font-bold text-white">Flight Details</p>
+              <p className="text-sm font-bold text-white">View Details</p>
             </div>
             {/* ticket1 */}
             <div className="w-full h-auto rounded-xl bg-white mt-2 mr-1 px-3 py-4 flex flex-col">
               <div className="flex flex-row align-middle items-center">
-              <Image src={"/garuda.png"} width={100} height={57} alt="garuda"/>
+                <Image
+                  src={"/garuda.png"}
+                  width={100}
+                  height={57}
+                  alt="garuda"
+                />
                 <p className="font-bold mb-2 ml-4">Airline name</p>
               </div>
               <div className="flex-col w-4/5 text-black ">
