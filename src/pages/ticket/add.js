@@ -6,6 +6,7 @@ import { MdWarning } from "react-icons/md";
 import { MdCheckCircleOutline } from "react-icons/md";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import planes from "../../../public/illustration.svg";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Ticket() {
@@ -18,7 +19,8 @@ export default function Ticket() {
 
       <main className={` ${poppins.className} bg-ankasa-grey text-black`}>
         {/* top */}
-        <div className="h-44 w-full bg-ankasa-blue rounded-b-2xl px-6 flex flex-row items-center justify-between">
+        <div className="h-44 w-full bg-ankasa-blue rounded-b-2xl px-6 flex flex-row items-center justify-between"
+        style={{ backgroundImage: `url(${planes.src})`, backgroundRepeat:`no-repeat` }}>
         </div>
         {/* content */}
         <div className="md:flex-row md:flex h-full p-6 px-2 -mt-36">

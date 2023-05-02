@@ -1,6 +1,7 @@
 import Image from "next/image";
 import bar from "../../../public/barcelona.jpg";
-
+import jpn from "../../../public/japan.jpg";
+import planes from "../../../public/illustration.svg";
 export const Trending = () => {
   return (
     <div className="md:px-16 px-4 my-6">
@@ -66,14 +67,81 @@ export const Trending = () => {
 export const Popular = () => {
   return (
     <div className="md:px-16 px-4 my-4">
-      <p className="md:block text-md hidden text-ankasa-blue md:text-center">
-        TOP 10
-      </p>
-      <p className="text-2xl text-black md:font-bold md:text-center">
-        Top 10 destinations
-      </p>
-      <div className="text-black flex my-4 md:w-full md:h-96 md:bg-ankasa-blue md:rounded-2xl">
-        <div className="md:hidden h-64 w-52 bg-gray-500 rounded-2xl"></div>
+      <div className="md:hidden block">
+        <p className="md:block text-md hidden text-ankasa-blue md:text-center">
+          TOP 10
+        </p>
+        <p className="text-2xl text-black md:font-bold md:text-center">
+          Top 10 destinations
+        </p>
+      </div>
+      <div className="md:hidden h-64 w-52 bg-gray-500 rounded-2xl"></div>
+      <div
+        className="text-white flex my-4 md:w-full md:h-96 md:bg-ankasa-blue md:rounded-2xl p-6"
+        style={{ backgroundImage: `url(${planes.src})`, backgroundRepeat:`no-repeat` }}
+      >
+        <div className="w-full">
+          <div className="flex-col h-auto ">
+            <p className="md:block text-md hidden md:text-center">TOP 10</p>
+            <p className="text-2xl  md:font-bold md:text-center">
+              Top 10 destinations
+            </p>
+          </div>
+          <div className="md:flex h-5/6 mt-2 p-4 justify-center hidden">
+            {/* ball 1 */}
+            <div
+              className="rounded-full w-44 h-44 bg-ankasa-blue border-4 border-white mx-5 flex flex-col justify-end"
+              style={{
+                backgroundImage: `url(${jpn.src})`,
+                backgroundPosition: `center`,
+                backgroundSize: `cover`,
+              }}
+            >
+              <div className="-mb-8 flex justify-center w-full ">
+                <p>JAPAN</p>
+              </div>
+            </div>
+            {/* ball 2 */}
+            <div
+              className="rounded-full w-44 h-44 bg-ankasa-blue border-4 border-white mx-5 flex flex-col justify-end"
+              style={{
+                backgroundImage: `url(${jpn.src})`,
+                backgroundPosition: `center`,
+                backgroundSize: `cover`,
+              }}
+            >
+              <div className="-mb-8 flex justify-center w-full ">
+                <p>JAPAN</p>
+              </div>
+            </div>
+            {/* ball 3 */}
+            <div
+              className="rounded-full w-44 h-44 bg-ankasa-blue border-4 border-white mx-5 flex flex-col justify-end"
+              style={{
+                backgroundImage: `url(${jpn.src})`,
+                backgroundPosition: `center`,
+                backgroundSize: `cover`,
+              }}
+            >
+              <div className="-mb-8 flex justify-center w-full ">
+                <p>JAPAN</p>
+              </div>
+            </div>
+            {/* ball 4 */}
+            <div
+              className="rounded-full w-44 h-44 bg-ankasa-blue border-4 border-white mx-5 flex flex-col justify-end"
+              style={{
+                backgroundImage: `url(${jpn.src})`,
+                backgroundPosition: `center`,
+                backgroundSize: `cover`,
+              }}
+            >
+              <div className="-mb-8 flex justify-center w-full ">
+                <p>JAPAN</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
