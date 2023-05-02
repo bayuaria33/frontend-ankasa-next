@@ -4,6 +4,8 @@ import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Head from "next/head";
+import Link from "next/link";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Login() {
@@ -37,8 +39,8 @@ export default function Login() {
       .catch((err) => {
         console.log("Login fail");
         console.log(err.response.data.message);
-        setErrormsg(err.response.data.message)
-        setIserror(true)
+        setErrormsg(err.response.data.message);
+        setIserror(true);
       });
   };
   useEffect(() => {
@@ -46,6 +48,9 @@ export default function Login() {
   }, []);
   return (
     <main className={`md:flex min-h-screen md:flex-row ${poppins.className}`}>
+      <Head>
+        <title>Login</title>
+      </Head>
       <div className="md:flex hidden md:h-screen md:w-1/2 w-screen bg-ankasa-blue items-center justify-center align-middle">
         <Image
           src={"/illustration.svg"}
@@ -98,7 +103,9 @@ export default function Login() {
           </button>
           <div className="text-center mt-8">
             <p className="text-gray-500">Did you forget your password?</p>
-            <p className="text-ankasa-blue">Tap here to reset</p>
+            <Link href={"/auth/forgot"}>
+              <p className="text-ankasa-blue">Tap here to reset</p>
+            </Link>
           </div>
         </form>
       </div>

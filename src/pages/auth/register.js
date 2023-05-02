@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
+import Head from "next/head";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -13,6 +14,8 @@ export default function Register() {
   const url = "http://localhost:4000/";
   const router = useRouter();
   const [fullname, setFullname] = useState("");
+  const [errorMsg, setErrormsg] = useState();
+  const [isError, setIserror] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const formData = {
@@ -48,6 +51,9 @@ export default function Register() {
     <main
       className={` md:flex md:min-h-screen md:h-auto md:flex-row ${poppins.className}`}
     >
+      <Head>
+        <title>Registration</title>
+      </Head>
       <div className="md:flex hidden md:min-h-full md:w-1/2 w-screen bg-ankasa-blue items-center justify-center align-middle">
         <Image
           src={"/illustration.svg"}
@@ -103,6 +109,7 @@ export default function Register() {
                 required
               />
             </div>
+            {isError && <p className="text-red-400 my-2">{errorMsg}</p>}
             <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
               <p className="text-white text-bold">Sign Up</p>
             </button>

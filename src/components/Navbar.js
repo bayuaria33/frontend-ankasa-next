@@ -89,13 +89,15 @@ const Navbar = () => {
 
         {token ? (
           <div className="flex text-black text-sm">
-            <Image
-              src={photo}
-              width={56}
-              height={56}
-              alt="userphoto"
-              className="border-2 border-ankasa-blue rounded-full max-h-14"
-            />
+            <Link href={"/profile"}>
+              <Image
+                src={photo}
+                width={56}
+                height={56}
+                alt="userphoto"
+                className="border-2 border-ankasa-blue rounded-full max-h-14"
+              />
+            </Link>
             <button
               className="bg-blue-500 m-sm w-36 h-14 rounded-xl hidden lg:block mx-10 text-white shadow-lg font-semibold"
               onClick={logout}

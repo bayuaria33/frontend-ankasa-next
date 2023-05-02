@@ -1,10 +1,14 @@
 import Image from "next/image";
 import { Poppins } from "next/font/google";
+import Head from "next/head";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Forgot() {
   return (
     <main className={`md:flex min-h-screen md:flex-row ${poppins.className}`}>
+      <Head>
+        <title>Forgot Password</title>
+      </Head>
       <div className="md:flex hidden md:h-screen md:w-1/2 w-screen bg-ankasa-blue items-center justify-center align-middle">
         <Image
           src={"/illustration.svg"}

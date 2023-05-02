@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Head from "next/head";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -35,9 +36,9 @@ export default function Verify() {
       })
       .then((res) => {
         console.log("Verify success: ", res.data.data);
-        removeCookie("emailotp")
-        removeCookie("otpcode")
-        router.push("/auth/login")
+        removeCookie("emailotp");
+        removeCookie("otpcode");
+        router.push("/auth/login");
       })
       .catch((err) => {
         console.log("Verify fail");
@@ -47,6 +48,9 @@ export default function Verify() {
 
   return (
     <main className={`md:flex min-h-screen md:flex-row ${poppins.className}`}>
+      <Head>
+        <title>Verify OTP</title>
+      </Head>
       <div className="md:flex hidden md:h-screen md:w-1/2 w-screen bg-ankasa-blue items-center justify-center align-middle">
         <Image
           src={"/illustration.svg"}
@@ -64,7 +68,10 @@ export default function Verify() {
           <Image src={"/plane.svg"} width={50} height={34} alt="logo" />
           <p className="text-3xl font-extrabold mx-6">Ankasa</p>
         </div>
-        <form className="w-80 my-16 md:flex-col md:mx-auto" onSubmit={verifyForm}>
+        <form
+          className="w-80 my-16 md:flex-col md:mx-auto"
+          onSubmit={verifyForm}
+        >
           <p className="text-4xl font-extrabold">Verify OTP</p>
           <div className="my-8">
             <label>Email </label>
@@ -88,7 +95,6 @@ export default function Verify() {
               placeholder="OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-
             />
           </div>
           <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">

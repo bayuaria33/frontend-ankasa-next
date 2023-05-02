@@ -10,6 +10,7 @@ import { FaChevronDown } from "react-icons/fa";
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -97,7 +98,9 @@ export default function Booking() {
                 </div>
               </div>
               <div className="flex align-middle text-center items-center w-40 justify-between">
-                <p className="text-md text-ankasa-blue">View Details</p>
+                <Link href={"/pass"}>
+                  <p className="text-md text-ankasa-blue">View Details</p>
+                </Link>
                 <FaChevronDown className="text-ankasa-blue" />
               </div>
             </div>
@@ -121,7 +124,9 @@ export default function Booking() {
                 </div>
               </div>
               <div className="flex align-middle text-center items-center w-40 justify-between">
-                <p className="text-md text-ankasa-blue">View Details</p>
+                <Link href={"/pass"}>
+                  <p className="text-md text-ankasa-blue">View Details</p>
+                </Link>
                 <FaChevronDown className="text-ankasa-blue" />
               </div>
             </div>
