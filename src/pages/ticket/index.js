@@ -13,13 +13,69 @@ import { MdWifi } from "react-icons/md";
 import { useState } from "react";
 import Image from "next/image";
 import { Slider } from "@mui/material";
+import axios from "axios";
+import Error from "next/error";
+import Link from "next/link";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-export default function Ticket() {
+const url = "http://localhost:4000/";
+
+export async function getServerSideProps() {
+  const res = await axios.get(url + `tickets/all`);
+  const data = await res.data.data;
+
+  // format waktu arrival - departure
+  const formattedData = data.map((item) => {
+    const date1 = new Date(item.departure_date);
+    const date2 = new Date(item.arrival_date);
+    const formattedDate1 = date1.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const formattedDate2 = date2.toLocaleDateString("id-ID", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+    const diffs = Math.abs(date2 - date1);
+    const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
+    const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
+    let diffStr = "";
+
+    if (diffsInHours > 0) {
+      diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
+    }
+    if (diffsInMinutes > 0) {
+      diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
+        diffsInMinutes > 1 ? "s" : ""
+      }`;
+    }
+
+    return {
+      ...item,
+      departure_date: formattedDate1,
+      arrival_date: formattedDate2,
+      diffs: diffStr,
+    };
+  });
+
+  return { props: { formattedData } };
+}
+
+export default function Ticket({ formattedData }) {
+  console.log("data: ", formattedData);
   const [sliderValue, setsliderValue] = useState([145, 300]);
   const handleSlider = (event, newValue) => {
     setsliderValue(newValue);
   };
-
   return (
     <Layout>
       <Head>
@@ -283,43 +339,62 @@ export default function Ticket() {
                 />
               </div>
             </div>
-            {/* ticket1 */}
-            <div className="w-full h-full rounded-xl bg-white mt-2 mr-1 px-3 py-4">
-              <div className="flex flex-row align-middle items-center">
-              <Image src={"/garuda.png"} width={100} height={57} alt="garuda"/>
-                <p className="font-bold mb-2 ml-6">Airline name</p>
+            {formattedData?.map((item, index) => (
+              <div key={index}>
+                {/* ticket */}
+                <div className="w-full h-full rounded-xl bg-white mt-2 mr-1 px-3 py-4">
+                  <div className="flex flex-row align-middle items-center">
+                    <Image
+                      src={item.airline_photo}
+                      width={100}
+                      height={57}
+                      alt="garuda"
+                    />
+                    <p className="font-bold mb-2 ml-6">{item.airline}</p>
+                  </div>
+                  <div className="flex w-full align-middle items-center justify-between px-2 mt-2 text-gray-500">
+                    <div className="flex text-2xl font-bold w-44 justify-between my-3">
+                      <p>{item.departure_country}</p>
+                      <Image
+                        src="/plane.svg"
+                        width={36}
+                        height={36}
+                        alt="logo"
+                      />
+                      <p>{item.arrival_country}</p>
+                    </div>
+                    <div>
+                      <p>{item.diffs}</p>
+                      <p>{item.transit}</p>
+                    </div>
+                    <div className="flex w-40  justify-evenly">
+                      <MdLuggage size={24} />
+                      <MdFastfood size={24} />
+                      <MdWifi size={24} />
+                    </div>
+                    <div className="flex">
+                      <p className="font-bold text-ankasa-blue mr-2">
+                        $ {item.price}
+                      </p>
+                      <span> /pax</span>
+                    </div>
+                    <Link href={"/ticket/add"}>
+                      <button className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg">
+                        Select
+                      </button>
+                    </Link>
+                  </div>
+                  <hr className="h-px my-3 bg-gray-300 border-0 " />
+                  {/* <p>Here</p> */}
+                  <div className="text-lg font-bold flex-row flex justify-between align-middle">
+                    <div className="flex align-middle text-center items-center w-40 justify-between px-2">
+                      <p className="text-md text-ankasa-blue">View Details</p>
+                      <FaChevronDown className="text-ankasa-blue" />
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex w-full align-middle items-center justify-between px-2 mt-2 text-gray-500">
-                <div className="flex text-2xl font-bold w-44 justify-between my-3">
-                  <p>IDN</p>
-                  <Image src="/plane.svg" width={36} height={36} alt="logo" />
-                  <p>JPN</p>
-                </div>
-                <div>
-                  <p>3 Hours 11 Minutes</p>
-                  <p>1 Transit</p>
-                </div>
-                <div className="flex w-40  justify-evenly">
-                  <MdLuggage size={24} />
-                  <MdFastfood size={24} />
-                  <MdWifi size={24} />
-                </div>
-                <div className="flex">
-                  <p className="font-bold text-ankasa-blue mr-2">$ 214,00 </p>
-                  <span> /pax</span>
-                </div>
-                <button className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg">
-                  Select
-                </button>
-              </div>
-              <hr className="h-px my-3 bg-gray-300 border-0 " />
-              <div className="text-lg font-bold flex-row flex justify-between align-middle">
-                <div className="flex align-middle text-center items-center w-40 justify-between px-2">
-                  <p className="text-md text-ankasa-blue">View Details</p>
-                  <FaChevronDown className="text-ankasa-blue" />
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </main>

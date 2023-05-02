@@ -6,15 +6,36 @@ import { BsFillStarFill } from "react-icons/bs";
 import { BsFillGearFill } from "react-icons/bs";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import { BsChevronRight } from "react-icons/bs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useCookies } from "react-cookie";
+import jwtDecode from "jwt-decode";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Profile() {
+  const [token, setToken] = useState(null);
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [photo, setPhoto] = useState(
     "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
   );
+  const [fullname, setFullname] = useState("name");
+  const [email, setEmail] = useState('email')
+  const [city, setCity] = useState('City')
+  const [country, setCountry] =useState('Country')
+
+  useEffect(() => {
+    if (cookies.accessToken) {
+      setToken(jwtDecode(cookies.accessToken));
+    }
+  }, [cookies]);
+  useEffect(() => {
+    if (token) {
+      setPhoto(token.photo);
+      setFullname(token.fullname)
+      setEmail(token.email)
+    }
+  }, [token]);
   return (
     <Layout>
       <Head>
@@ -37,8 +58,8 @@ export default function Profile() {
             <button className="border-2 border-ankasa-blue rounded-xl bg-white text-ankasa-blue text-md font-bold p-3 my-4">
               Select Photo
             </button>
-            <p className="font-semibold">Mike Kowalski</p>
-            <p className="text-sm text-gray-500">Medan, Indonesia</p>
+            <p className="font-semibold">{fullname}</p>
+            <p className="text-sm text-gray-500">{city}, {country}</p>
             <div className="w-full h-24 mt-2 pt-2">
               <p className="text-sm font-bold ml-2">Cards</p>
               <div className="w-full h-16 mt-2 bg-ankasa-blue rounded-xl p-3">
@@ -88,6 +109,7 @@ export default function Profile() {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Email address"
+                  value={email}
                   //   onChange={(e) => setEmail(e.target.value)}
                 />
                 <label>Phone Number</label>
