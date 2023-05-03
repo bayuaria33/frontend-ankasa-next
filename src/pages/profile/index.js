@@ -29,7 +29,7 @@ export default function Profile() {
   const logout = () => {
     // remove all cookies
     cookies &&
-      Object.keys(cookies).forEach((cookieName) => removeCookie(cookieName));
+      Object.keys(cookies).forEach((cookieName) => removeCookie(cookieName, {path:"/"}));
     router.push("/");
   };
 

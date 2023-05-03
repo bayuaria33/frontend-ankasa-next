@@ -43,7 +43,9 @@ export default function Register() {
       })
       .catch((err) => {
         console.log("Register fail");
-        console.log(err);
+        console.log(err.response.data.message);
+        setErrormsg(err.response.data.message);
+        setIserror(true);
       });
   };
 
