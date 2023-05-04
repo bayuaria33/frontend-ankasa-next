@@ -11,25 +11,51 @@ import Image from "next/image";
 import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
 import { useRouter } from "next/router";
+import axios from "axios";
+import { Alert } from "@mui/material";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-
+const url = "http://localhost:4000/";
 export default function Profile() {
   const router = useRouter();
+  const [errorMsg, setErrormsg] = useState();
+  const [isError, setIserror] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [token, setToken] = useState(null);
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  const [photo, setPhoto] = useState(
-    "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
-  );
-  const [fullname, setFullname] = useState("name");
-  const [email, setEmail] = useState("email");
-  const [city, setCity] = useState("City");
-  const [country, setCountry] = useState("Country");
+  const [photo, setPhoto] = useState();
+  const [preview, setPreview] = useState("");
+  const [user, setUser] = useState({
+    fullname: "Full Name",
+    email: "Email",
+    city: "City",
+    country: "Country",
+    phone: "Phone",
+    photo:
+      "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png",
+    postalcode: "Postal Code",
+  });
+
+
+  const handleChange = (e) => {
+    setUser({
+      ...user,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handlePhoto = (e) => {
+    setPhoto(e.target.files[0]);
+    setPreview(URL.createObjectURL(e.target.files[0]));
+    console.log(e.target.files[0]);
+  };
 
   const logout = () => {
     // remove all cookies
     cookies &&
-      Object.keys(cookies).forEach((cookieName) => removeCookie(cookieName, {path:"/"}));
+      Object.keys(cookies).forEach((cookieName) =>
+        removeCookie(cookieName, { path: "/" })
+      );
     router.push("/");
   };
 
@@ -40,11 +66,56 @@ export default function Profile() {
   }, [cookies]);
   useEffect(() => {
     if (token) {
-      setPhoto(token.photo);
-      setFullname(token.fullname);
-      setEmail(token.email);
+      setUser({
+        fullname: token.fullname,
+        email: token.email,
+        city: token.city,
+        country: token.country,
+        phone: token.phone,
+        photo: token.photo,
+        postalcode: token.postalcode,
+      });
     }
   }, [token]);
+
+  const updateForm = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("fullname", user.fullname);
+    formData.append("email", user.email);
+    formData.append("city", user.city);
+    formData.append("country", user.country);
+    formData.append("phone", user.phone);
+    formData.append("postalcode", user.postalcode);
+    formData.append("photo", photo ? photo : user.photo);
+    for (const value of formData.values()) {
+      console.log(value);
+    }
+    console.log("user : ", user);
+    axios
+      .put(url + `users/update`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ` + cookies.accessToken,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        console.log("update profile success ");
+        setIsSuccess(true)
+        setTimeout(() => {
+          logout()
+          router.push("/auth/login")
+        }, 2000);
+      })
+      .catch((err) => {
+        console.log("update profile fail");
+        console.log(err);
+        console.log(err.response.data.message);
+        setErrormsg(err.response.data.message);
+        setIserror(true);
+      });
+  };
   return (
     <Layout>
       <Head>
@@ -56,20 +127,43 @@ export default function Profile() {
         <div className="md:w-1/5 md:h-screen mx-4 rounded-xl p-2 bg-white">
           <div className="w-full h-full rounded-xl bg-white flex flex-col items-center pt-4 p-1">
             {/* photo */}
-            <Image
-              src={photo}
-              width={120}
-              height={120}
-              alt="userphoto"
-              className="bg-white rounded-full border-2 border-ankasa-blue max-h-32"
-            />
+            {preview ? (
+              <Image
+                src={preview}
+                width={120}
+                height={120}
+                alt="userphotopreview"
+                className="bg-white rounded-full border-2 border-ankasa-blue max-h-32"
+              />
+            ) : (
+              <Image
+                src={user.photo}
+                width={120}
+                height={120}
+                alt="userphoto"
+                className="bg-white rounded-full border-2 border-ankasa-blue max-h-32"
+              />
+            )}
+
             {/* profile info */}
-            <button className="border-2 border-ankasa-blue rounded-xl bg-white text-ankasa-blue text-md font-bold p-3 my-4">
-              Select Photo
-            </button>
-            <p className="font-semibold">{fullname}</p>
+            <div className="w-44 h-16 flex items-center text-center justify-center">
+              <label
+                htmlFor="imgbtn"
+                className="border-2 border-ankasa-blue rounded-xl bg-white text-ankasa-blue text-md font-bold p-3 my-4"
+              >
+                Select Photo
+              </label>
+              <input
+                id="imgbtn"
+                type="file"
+                accept="image/*"
+                style={{ display: `none` }}
+                onChange={handlePhoto}
+              />
+            </div>
+            <p className="font-semibold">{user.fullname}</p>
             <p className="text-sm text-gray-500">
-              {city}, {country}
+              {user.city}, {user.country}
             </p>
             <div className="w-full h-24 mt-2 pt-2">
               <p className="text-sm font-bold ml-2">Cards</p>
@@ -106,6 +200,7 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
         <div className="md:w-4/5 md:h-full mx-4 mt-2 md:mt-0 rounded-xl p-2 bg-white">
           <div className="w-full h-16 rounded-xl bg-white p-2">
             <p className="text-md text-ankasa-blue">P R O F I L E</p>
@@ -123,18 +218,19 @@ export default function Profile() {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Email address"
-                  value={email}
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.email}
+                  onChange={handleChange}
                 />
                 <label>Phone Number</label>
                 <input
                   autoComplete="off"
-                  id="phonenumber"
-                  name="phonenumber"
+                  id="phone"
+                  name="phone"
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Phone Number"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.phone}
+                  onChange={handleChange}
                 />
               </form>
             </div>
@@ -149,7 +245,8 @@ export default function Profile() {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Fullname"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.fullname}
+                  onChange={handleChange}
                 />
                 <label>City</label>
                 <input
@@ -159,7 +256,8 @@ export default function Profile() {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="City"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.city}
+                  onChange={handleChange}
                 />
                 <label>Country </label>
                 <input
@@ -169,7 +267,8 @@ export default function Profile() {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Country"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.country}
+                  onChange={handleChange}
                 />
                 <label>Postal Code </label>
                 <input
@@ -179,13 +278,27 @@ export default function Profile() {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Postal Code"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.postalcode}
+                  onChange={handleChange}
                 />
               </form>
             </div>
           </div>
+          {isError && (
+            <Alert severity="error" className={`${poppins.className} mb-4 `}>
+              {errorMsg}
+            </Alert>
+          )}
+          {isSuccess && (
+            <Alert severity="success" className={`${poppins.className} mb-4 `}>
+              Update Profile Success
+            </Alert>
+          )}
           <div className="w-full h-20 bg-white justify-end flex flex-row p-2 mt-2">
-            <button className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg">
+            <button
+              className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg"
+              onClick={updateForm}
+            >
               Save
             </button>
           </div>

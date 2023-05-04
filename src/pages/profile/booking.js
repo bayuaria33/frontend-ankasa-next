@@ -8,13 +8,54 @@ import { BsFillDoorOpenFill } from "react-icons/bs";
 import { BsChevronRight } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCookies } from "react-cookie";
+import jwtDecode from "jwt-decode";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Booking() {
+  const [token, setToken] = useState(null);
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [preview, setPreview] = useState("");
+  const [user, setUser] = useState({
+    fullname: "Full Name",
+    email: "Email",
+    city: "City",
+    country: "Country",
+    phone: "Phone",
+    photo:
+      "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png",
+    postalcode: "Postal Code",
+  });
+  const logout = () => {
+    // remove all cookies
+    cookies &&
+      Object.keys(cookies).forEach((cookieName) =>
+        removeCookie(cookieName, { path: "/" })
+      );
+    router.push("/");
+  };
+  useEffect(() => {
+    if (cookies.accessToken) {
+      setToken(jwtDecode(cookies.accessToken));
+    }
+  }, [cookies]);
+  useEffect(() => {
+    if (token) {
+      setUser({
+        fullname: token.fullname,
+        email: token.email,
+        city: token.city,
+        country: token.country,
+        phone: token.phone,
+        photo: token.photo,
+        postalcode: token.postalcode,
+      });
+    }
+  }, [token]);
   const [photo, setPhoto] = useState(
     "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
   );
@@ -29,19 +70,30 @@ export default function Booking() {
         <div className="md:w-1/5 md:h-screen mx-4 rounded-xl p-2 bg-white">
           <div className="w-full h-full rounded-xl bg-white flex flex-col items-center pt-4 p-1">
             {/* photo */}
-            <Image
-              src={photo}
-              width={120}
-              height={120}
-              alt="userphoto"
-              className="bg-white rounded-full border-2 border-ankasa-blue max-h-32"
-            />
+            {preview ? (
+              <Image
+                src={preview}
+                width={120}
+                height={120}
+                alt="userphotopreview"
+                className="bg-white rounded-full border-2 border-ankasa-blue max-h-32"
+              />
+            ) : (
+              <Image
+                src={user.photo}
+                width={120}
+                height={120}
+                alt="userphoto"
+                className="bg-white rounded-full border-2 border-ankasa-blue max-h-32"
+              />
+            )}
+
             {/* profile info */}
-            <button className="border-2 border-ankasa-blue rounded-xl bg-white text-ankasa-blue text-md font-bold p-3 my-4">
-              Select Photo
-            </button>
-            <p className="font-semibold">Mike Kowalski</p>
-            <p className="text-sm text-gray-500">Medan, Indonesia</p>
+
+            <p className="font-semibold">{user.fullname}</p>
+            <p className="text-sm text-gray-500">
+              {user.city}, {user.country}
+            </p>
             <div className="w-full h-24 mt-2 pt-2">
               <p className="text-sm font-bold ml-2">Cards</p>
               <div className="w-full h-16 mt-2 bg-ankasa-blue rounded-xl p-3">
@@ -67,13 +119,17 @@ export default function Booking() {
               <p className="font-bold">Settings</p>
               <BsChevronRight color="grey" size={20} />
             </div>
-            <div className="w-full h-8 mt-2 flex-row flex p-2 items-center justify-between hover:text-ankasa-blue">
+            <div
+              className="w-full h-8 mt-2 flex-row flex p-2 items-center justify-between hover:text-red-400 hover:border-2 border-red-400"
+              onClick={logout}
+            >
               <BsFillDoorOpenFill color="grey" size={20} />
               <p className="font-bold">Logout</p>
               <BsChevronRight color="grey" size={20} />
             </div>
           </div>
         </div>
+
         <div className="md:w-4/5 md:h-full mx-4 mt-2 md:mt-0 rounded-xl p-2 ">
           <div className="w-full h-16 rounded-xl p-2 bg-white">
             <p className="text-md text-ankasa-blue">B O O K I N G S</p>
