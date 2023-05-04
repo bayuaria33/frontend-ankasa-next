@@ -6,6 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import Head from "next/head";
+import { Alert } from "@mui/material";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -111,7 +112,7 @@ export default function Register() {
                 required
               />
             </div>
-            {isError && <p className="text-red-400 my-2">{errorMsg}</p>}
+            {isError && <Alert severity="error" className={`${poppins.className} mb-4 `} >{errorMsg}</Alert> }
             <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
               <p className="text-white text-bold">Sign Up</p>
             </button>

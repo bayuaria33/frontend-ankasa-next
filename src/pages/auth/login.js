@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
+import { Alert } from "@mui/material";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Login() {
@@ -96,7 +97,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {isError && <p className="text-red-400">{errorMsg}</p>}
+            {isError && <Alert severity="error" className={`${poppins.className} mb-4 `} >{errorMsg}</Alert> }
           </div>
           <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
             <p className="text-white text-bold">Login</p>
