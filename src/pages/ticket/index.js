@@ -1,6 +1,7 @@
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
+import Alert from '@mui/material/Alert';
 import { Poppins } from "next/font/google";
 import Layout from "@/components/Layout";
 import Head from "next/head";
@@ -14,63 +15,65 @@ import { useState } from "react";
 import Image from "next/image";
 import { Slider } from "@mui/material";
 import axios from "axios";
-import Error from "next/error";
 import Link from "next/link";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = "http://localhost:4000/";
-
 export async function getServerSideProps() {
-  const res = await axios.get(url + `tickets/all`);
-  const data = await res.data.data;
+  try {
+    const res = await axios.get(url + `tickets/all`);
+    const data = await res.data.data;
 
-  // format waktu arrival - departure
-  const formattedData = data.map((item) => {
-    const date1 = new Date(item.departure_date);
-    const date2 = new Date(item.arrival_date);
-    const formattedDate1 = date1.toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
+    // format waktu arrival - departure
+    const formattedData = data.map((item) => {
+      const date1 = new Date(item.departure_date);
+      const date2 = new Date(item.arrival_date);
+      const formattedDate1 = date1.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
+      const formattedDate2 = date2.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
+      const diffs = Math.abs(date2 - date1);
+      const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
+      const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
+      let diffStr = "";
+
+      if (diffsInHours > 0) {
+        diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
+      }
+      if (diffsInMinutes > 0) {
+        diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
+          diffsInMinutes > 1 ? "s" : ""
+        }`;
+      }
+
+      return {
+        ...item,
+        departure_date: formattedDate1,
+        arrival_date: formattedDate2,
+        diffs: diffStr,
+      };
     });
-    const formattedDate2 = date2.toLocaleDateString("id-ID", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    });
-    const diffs = Math.abs(date2 - date1);
-    const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
-    const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
-    let diffStr = "";
 
-    if (diffsInHours > 0) {
-      diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
-    }
-    if (diffsInMinutes > 0) {
-      diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
-        diffsInMinutes > 1 ? "s" : ""
-      }`;
-    }
-
-    return {
-      ...item,
-      departure_date: formattedDate1,
-      arrival_date: formattedDate2,
-      diffs: diffStr,
-    };
-  });
-
-  return { props: { formattedData } };
+    return { props: { formattedData } };
+  } catch (error) {
+    return { props: { error:true } };
+  }
 }
 
-export default function Ticket({ formattedData }) {
+export default function Ticket({ formattedData, error }) {
   console.log("data: ", formattedData);
   const [sliderValue, setsliderValue] = useState([145, 300]);
   const handleSlider = (event, newValue) => {
@@ -339,6 +342,7 @@ export default function Ticket({ formattedData }) {
                 />
               </div>
             </div>
+            {error && <Alert severity="error" className={`${poppins.className} font-bold`} >Connection error!</Alert>}
             {formattedData?.map((item, index) => (
               <div key={index}>
                 {/* ticket */}
@@ -378,7 +382,20 @@ export default function Ticket({ formattedData }) {
                       </p>
                       <span> /pax</span>
                     </div>
-                    <Link href={"/ticket/add"}>
+                    <Link
+                      href={{
+                        pathname: "/ticket/add",
+                        query: {
+                          id: item.id,
+                          // airline: item.airline,
+                          // arrival_city: item.arrival_city,
+                          // arrival_country: item.arrival_country,
+                          // departure_city: item.departure_city,
+                          // departure_country: item.departure_country,
+                          // departure_date: item.departure_date
+                        },
+                      }}
+                    >
                       <button className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg">
                         Select
                       </button>
