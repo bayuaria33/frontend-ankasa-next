@@ -13,10 +13,73 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
+const url = "http://localhost:4000/";
 
-export default function Booking() {
+export async function getServerSideProps(context) {
+  const { accessToken } = context.req.cookies;
+  try {
+    const res = await axios.get(url + `bookings/my-bookings`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const data = await res.data.data;
+    // format waktu arrival - departure
+    const formattedData = data.map((item) => {
+      const date1 = new Date(item.departure_date);
+      const date2 = new Date(item.arrival_date);
+      const formattedDate1 = date1.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
+      const formattedDate2 = date2.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
+      const diffs = Math.abs(date2 - date1);
+      const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
+      const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
+      let diffStr = "";
+
+      if (diffsInHours > 0) {
+        diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
+      }
+      if (diffsInMinutes > 0) {
+        diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
+          diffsInMinutes > 1 ? "s" : ""
+        }`;
+      }
+
+      return {
+        ...item,
+        departure_date: formattedDate1,
+        arrival_date: formattedDate2,
+        diffs: diffStr,
+      };
+    });
+
+    return { props: { formattedData } };
+  } catch (error) {
+    return { props: { error: true } };
+  }
+}
+export default function Booking({ formattedData, error }) {
+  const router = useRouter();
+  console.log(formattedData);
   const [token, setToken] = useState(null);
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [preview, setPreview] = useState("");
@@ -46,6 +109,7 @@ export default function Booking() {
   useEffect(() => {
     if (token) {
       setUser({
+        id: token.id,
         fullname: token.fullname,
         email: token.email,
         city: token.city,
@@ -136,57 +200,40 @@ export default function Booking() {
             <p className="text-lg font-bold text-BLACK">Bookings</p>
           </div>
 
-          {/* book1 */}
-          <div className="w-full h-full rounded-xl bg-white mt-2 mr-1 px-3 py-4">
-            <p className="font-bold mb-2">Monday, 20 July 2023 - 12.33</p>
-            <div className="flex text-2xl font-bold w-44 justify-between my-3">
-              <p>IDN</p>
-              <Image src="/plane.svg" width={36} height={36} alt="logo" />
-              <p>JPN</p>
-            </div>
-            <p>Garuda Indonesia</p>
-            <hr className="h-px my-8 bg-gray-300 border-0 " />
-            <div className="font-bold text-xl flex-row flex justify-between align-middle">
-              <div className="flex flex-row">
-                <p className="text-gray-400 md:mr-16 mr-8">Status</p>
-                <div className="w-fit bg-orange-400 p-2 rounded-lg md:text-sm text-xs text-white">
-                  <p>Waiting for Payment</p>
+          {formattedData.map((item, index) => (
+            <div key={index}>
+              <div className="w-full h-full rounded-xl bg-white mt-2 mr-1 px-3 py-4">
+                <p className="font-bold mb-2">{item.departure_date}</p>
+                <div className="flex text-2xl font-bold w-44 justify-between my-3">
+                  <p>{item.departure_country}</p>
+                  <Image src="/plane.svg" width={36} height={36} alt="logo" />
+                  <p>{item.arrival_country}</p>
                 </div>
-              </div>
-              <div className="flex align-middle text-center items-center w-40 justify-between">
-                <Link href={"/pass"}>
-                  <p className="text-md text-ankasa-blue">View Details</p>
-                </Link>
-                <FaChevronDown className="text-ankasa-blue" />
-              </div>
-            </div>
-          </div>
+                <p className="font-bold text-gray-500">{item.airline_name}</p>
+                <hr className="h-px my-8 bg-gray-300 border-0 " />
+                <div className="font-bold text-xl flex-row flex justify-between align-middle">
+                  <div className="flex flex-row">
+                    <p className="text-gray-400 md:mr-16 mr-8">Status</p>
+                    <div className="w-fit bg-orange-400 p-2 rounded-lg md:text-sm text-xs text-white">
+                      <p>Waiting for Payment</p>
+                    </div>
+                  </div>
+                  <button className="flex align-middle text-center items-center w-40 justify-evenly">
+                    <p
+                      className="text-md text-ankasa-blue"
+                      onClick={() => {
+                        router.push(`/pass/${item.id}`);
+                      }}
+                    >
+                      View Pass
+                    </p>
 
-          {/* book2 */}
-          <div className="w-full h-full rounded-xl bg-white mt-2 mr-1 px-3 py-4">
-            <p className="font-bold mb-2">Monday, 20 July 2023 - 12.33</p>
-            <div className="flex text-2xl font-bold w-44 justify-between my-3">
-              <p>IDN</p>
-              <Image src="/plane.svg" width={36} height={36} alt="logo" />
-              <p>JPN</p>
-            </div>
-            <p>Garuda Indonesia</p>
-            <hr className="h-px my-8 bg-gray-300 border-0 " />
-            <div className="font-bold text-xl flex-row flex justify-between align-middle">
-              <div className="flex flex-row">
-                <p className="text-gray-400 md:mr-16 mr-8">Status</p>
-                <div className="w-fit bg-green-500 p-2 rounded-lg md:text-sm text-xs text-white">
-                  <p>E-ticket Issued</p>
+                    <FaChevronDown className="text-ankasa-blue" />
+                  </button>
                 </div>
               </div>
-              <div className="flex align-middle text-center items-center w-40 justify-between">
-                <Link href={"/pass"}>
-                  <p className="text-md text-ankasa-blue">View Details</p>
-                </Link>
-                <FaChevronDown className="text-ankasa-blue" />
-              </div>
             </div>
-          </div>
+          ))}
         </div>
       </main>
     </Layout>

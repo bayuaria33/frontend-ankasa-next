@@ -8,8 +8,11 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import planes from "../../../public/illustration.svg";
 import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import jwtDecode from "jwt-decode";
 import { Alert, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import axios from "axios";
+import Link from "next/link";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = "http://localhost:4000/";
 export async function getServerSideProps(context) {
@@ -67,9 +70,13 @@ export async function getServerSideProps(context) {
 }
 
 export default function Ticket({ formattedData, error }) {
-  const data = formattedData[0];
+  const [errorMsg, setErrormsg] = useState();
+  const [isError, setIserror] = useState(false);
+  //data ticket
+  const data =
+    formattedData && formattedData.length && formattedData.find((obj) => true);
+  console.log(data);
   const router = useRouter();
-  // const data = router.query;
   const [ticket, setTicket] = useState({
     airline: "Airline name",
     airline_photo: "",
@@ -79,10 +86,15 @@ export default function Ticket({ formattedData, error }) {
     departure_country: "Country",
     departure_date: "Departure Date",
     price: "",
+    class: "Class"
   });
 
   useEffect(() => {
+    if (!data) {
+      return <p>Error!</p>;
+    }
     setTicket({
+      id: data.id,
       airline: data.airline,
       airline_photo: data.airline_photo,
       arrival_city: data.arrival_city,
@@ -91,16 +103,90 @@ export default function Ticket({ formattedData, error }) {
       departure_country: data.departure_country,
       departure_date: data.departure_date,
       price: data.price,
+      class: data.class
     });
   }, [data]);
-  
-  if (!formattedData) {
-    return (
-      <Alert severity="error" className={`${poppins.className} font-bold`}>
-        Connection error!
-      </Alert>
-    );
-  }
+
+  //data user
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [token, setToken] = useState(null);
+  const [title, setTitle] = useState();
+  //TODO check insured
+  const [insured, setInsured] = useState(false);
+
+  const [user, setUser] = useState({
+    fullname: "Full Name",
+    email: "Email",
+    city: "City",
+    country: "Country",
+    phone: "Phone",
+    photo:
+      "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png",
+    postalcode: "Postal Code",
+  });
+
+  const handleChange = (e) => {
+    setUser({
+      ...user,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  useEffect(() => {
+    if (cookies.accessToken) {
+      setToken(jwtDecode(cookies.accessToken));
+    } else {
+      router.push("/auth/login");
+    }
+  }, [cookies, router]);
+  useEffect(() => {
+    if (token) {
+      setUser({
+        id: token.id,
+        fullname: token.fullname,
+        email: token.email,
+        city: token.city,
+        country: token.country,
+        phone: token.phone,
+        photo: token.photo,
+        postalcode: token.postalcode,
+      });
+    }
+  }, [token]);
+
+  //form
+  const formData = {
+    tickets_id: ticket.id,
+    users_id: user.id,
+    passengers: 1,
+    title: title,
+    payment_status: 0,
+    insured: insured,
+  };
+  const ticketForm = (e) => {
+    e.preventDefault();
+    axios
+      .post(url + `bookings/`, formData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        console.log("Create booking success");
+        console.log(res.data.data);
+        setTimeout(() => {
+          router.push("/profile/booking");
+        }, 2000);
+      })
+      .catch((err) => {
+        console.log("Create booking fail");
+        console.log(err);
+        console.log(err.response.data.error);
+        setErrormsg(err.response.data.error);
+        setIserror(true);
+      });
+  };
+
   return (
     <Layout>
       <Head>
@@ -133,7 +219,9 @@ export default function Ticket({ formattedData, error }) {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Fullname"
-                  onChange={(e) => setFullname(e.target.value)}
+                  value={user.fullname}
+                  onChange={handleChange}
+                  disabled
                   required
                 />
                 <label>Email </label>
@@ -144,7 +232,9 @@ export default function Ticket({ formattedData, error }) {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Email address"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.email}
+                  onChange={handleChange}
+                  disabled
                 />
                 <label>Phone Number</label>
                 <input
@@ -154,8 +244,17 @@ export default function Ticket({ formattedData, error }) {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Phone Number"
-                  //   onChange={(e) => setEmail(e.target.value)}
+                  value={user.phone}
+                  onChange={handleChange}
+                  disabled
                 />
+                <div className="w-full h-auto flex justify-end my-2">
+                  <Link href={"/profile"}>
+                    <p className="font-extrabold text-ankasa-blue">
+                      Update Profile
+                    </p>
+                  </Link>
+                </div>
                 <div className="flex items-center bg-red-200 p-2 rounded-xl">
                   <MdWarning />
                   <p className="ml-2">Make sure all data is correct</p>
@@ -173,7 +272,7 @@ export default function Ticket({ formattedData, error }) {
                   <p className="ml-2"></p>
                   <FormGroup>
                     <FormControlLabel
-                      control={<Switch defaultChecked />}
+                      control={<Switch defaultChecked disabled />}
                       label={
                         <p className={`${poppins.className}`}>
                           Same as contact person
@@ -190,19 +289,23 @@ export default function Ticket({ formattedData, error }) {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Fullname"
-                  onChange={(e) => setFullname(e.target.value)}
                   required
+                  value={user.fullname}
+                  onChange={handleChange}
+                  disabled
                 />
                 <label>Title </label>
-                <input
-                  autoComplete="off"
+                <select
                   id="title"
                   name="title"
-                  type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
-                  placeholder="Mr."
-                  //   onChange={(e) => setEmail(e.target.value)}
-                />
+                  onChange={(e) => setTitle(e.target.value)}
+                  defaultValue={0}
+                >
+                  <option value="0">--Select Title--</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Mrs.">Ms.</option>
+                </select>
                 <label>Nationality</label>
                 <input
                   autoComplete="off"
@@ -211,6 +314,9 @@ export default function Ticket({ formattedData, error }) {
                   type="text"
                   className="peer placeholder-grey h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 mb-4"
                   placeholder="Nationality"
+                  value={user.country}
+                  onChange={handleChange}
+                  disabled
                   //   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -225,14 +331,17 @@ export default function Ticket({ formattedData, error }) {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center my-4">
                     <input
-                      id="tnc-checkbox"
+                      id="insured"
                       type="checkbox"
-                      value=""
+                      name="insured"
+                      checked={insured}
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                      required
+                      onChange={(e) => {
+                        setInsured(e.target.checked);
+                      }}
                     />
                     <label
-                      htmlFor="tnc-checkbox"
+                      htmlFor="insured"
                       className="ml-2 text-sm font-bold text-gray-900"
                     >
                       Travel Insurance
@@ -248,12 +357,16 @@ export default function Ticket({ formattedData, error }) {
                 </p>
               </div>
             </div>
+
+            {isError && (
+              <Alert severity="error" className={`${poppins.className} my-4 `}>
+                {errorMsg ? errorMsg : <p>Something Went Wrong</p>}
+              </Alert>
+            )}
             <div className="flex w-full h-auto justify-center">
               <button
                 className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 w-1/2 shadow-lg "
-                onClick={() => {
-                  router.push("/ticket/payment");
-                }}
+                onClick={ticketForm}
               >
                 Proceed to Payment
               </button>
@@ -278,7 +391,9 @@ export default function Ticket({ formattedData, error }) {
             <div className="w-full h-auto rounded-xl bg-white mt-2 mr-1 px-3 py-4 flex flex-col">
               <div className="flex flex-row align-middle items-center">
                 <Image
-                  src={ticket.airline_photo}
+                  src={
+                    ticket.airline_photo ? ticket.airline_photo : "/plane.svg"
+                  }
                   width={100}
                   height={57}
                   alt="garuda"
@@ -296,9 +411,9 @@ export default function Ticket({ formattedData, error }) {
                   </p>
                 </div>
                 <div className="flex justify-between mt-2">
-                  <p className="text-xs">{ticket.departure_date} •</p>
-                  <p className="text-xs">6 Passengers •</p>
-                  <p className="text-xs">Economy</p>
+                  <p className="text-xs">{ticket.departure_date}</p>
+                  <p className="text-xs">•</p>
+                  <p className="text-xs">{ticket.class}</p>
                 </div>
                 <div className="flex items-center text-ankasa-blue mt-2">
                   <MdCheckCircleOutline className="mr-2" size={20} />

@@ -1,7 +1,7 @@
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Alert from '@mui/material/Alert';
+import Alert from "@mui/material/Alert";
 import { Poppins } from "next/font/google";
 import Layout from "@/components/Layout";
 import Head from "next/head";
@@ -15,7 +15,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Slider } from "@mui/material";
 import axios from "axios";
-import Link from "next/link";
+import { useRouter } from "next/router";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = "http://localhost:4000/";
 export async function getServerSideProps() {
@@ -69,15 +69,67 @@ export async function getServerSideProps() {
 
     return { props: { formattedData } };
   } catch (error) {
-    return { props: { error:true } };
+    return { props: { error: true } };
   }
 }
 
 export default function Ticket({ formattedData, error }) {
   console.log("data: ", formattedData);
+  const router = useRouter();
   const [sliderValue, setsliderValue] = useState([145, 300]);
   const handleSlider = (event, newValue) => {
     setsliderValue(newValue);
+  };
+  const validateFacilities = (data) => {
+    if (data === 1) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdLuggage size={24} />
+        </div>
+      );
+    } else if (data === 2) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdFastfood size={24} />
+        </div>
+      );
+    } else if (data === 3) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdWifi size={24} />
+        </div>
+      );
+    } else if (data === 4) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdLuggage size={24} />
+          <MdFastfood size={24} />
+        </div>
+      );
+    } else if (data === 5) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdLuggage size={24} />
+          <MdWifi size={24} />
+        </div>
+      );
+    } else if (data === 6) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdFastfood size={24} />
+          <MdWifi size={24} />
+        </div>
+      );
+    } else if (data === 7) {
+      return (
+        <div className="flex flex-row items-center sm:gap-1">
+          <MdLuggage size={24} />
+          <MdFastfood size={24} />
+          <MdWifi size={24} />
+        </div>
+      );
+    }
+    return null;
   };
   return (
     <Layout>
@@ -342,7 +394,14 @@ export default function Ticket({ formattedData, error }) {
                 />
               </div>
             </div>
-            {error && <Alert severity="error" className={`${poppins.className} font-bold`} >Connection error!</Alert>}
+            {error && (
+              <Alert
+                severity="error"
+                className={`${poppins.className} font-bold`}
+              >
+                Connection error!
+              </Alert>
+            )}
             {formattedData?.map((item, index) => (
               <div key={index}>
                 {/* ticket */}
@@ -372,9 +431,10 @@ export default function Ticket({ formattedData, error }) {
                       <p>{item.transit}</p>
                     </div>
                     <div className="flex w-40  justify-evenly">
-                      <MdLuggage size={24} />
+                      {validateFacilities(item.facilities)}
+                      {/* <MdLuggage size={24} />
                       <MdFastfood size={24} />
-                      <MdWifi size={24} />
+                      <MdWifi size={24} /> */}
                     </div>
                     <div className="flex">
                       <p className="font-bold text-ankasa-blue mr-2">
@@ -382,27 +442,16 @@ export default function Ticket({ formattedData, error }) {
                       </p>
                       <span> /pax</span>
                     </div>
-                    <Link
-                      href={{
-                        pathname: "/ticket/add",
-                        query: {
-                          id: item.id,
-                          // airline: item.airline,
-                          // arrival_city: item.arrival_city,
-                          // arrival_country: item.arrival_country,
-                          // departure_city: item.departure_city,
-                          // departure_country: item.departure_country,
-                          // departure_date: item.departure_date
-                        },
+                    <button
+                      className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg"
+                      onClick={() => {
+                        router.push(`/ticket/${item.id}`);
                       }}
                     >
-                      <button className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg">
-                        Select
-                      </button>
-                    </Link>
+                      Select
+                    </button>
                   </div>
                   <hr className="h-px my-3 bg-gray-300 border-0 " />
-                  {/* <p>Here</p> */}
                   <div className="text-lg font-bold flex-row flex justify-between align-middle">
                     <div className="flex align-middle text-center items-center w-40 justify-between px-2">
                       <p className="text-md text-ankasa-blue">View Details</p>

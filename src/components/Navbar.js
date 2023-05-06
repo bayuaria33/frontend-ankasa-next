@@ -82,7 +82,7 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link href={"/profile/booking"}>
+            <Link href={"/booking"}>
               <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
                 My Bookings
               </p>
@@ -92,8 +92,8 @@ const Navbar = () => {
 
         {token ? (
           <div className="flex text-black text-sm items-center pr-10">
-            <BsEnvelope color="black" size={24} className="mx-10" />
-            <BsBell color="black" size={24} className="mx-10" />
+            <BsEnvelope color="black" size={24} className="mx-10 md:block hidden" />
+            <BsBell color="black" size={24} className="mx-10 md:block hidden" />
             <Link href={"/profile"}>
               <Image
                 src={photo}
