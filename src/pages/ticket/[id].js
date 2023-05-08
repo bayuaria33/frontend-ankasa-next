@@ -86,7 +86,7 @@ export default function Ticket({ formattedData, error }) {
     departure_country: "Country",
     departure_date: "Departure Date",
     price: "",
-    class: "Class"
+    flight_class: "Class"
   });
 
   useEffect(() => {
@@ -103,7 +103,7 @@ export default function Ticket({ formattedData, error }) {
       departure_country: data.departure_country,
       departure_date: data.departure_date,
       price: data.price,
-      class: data.class
+      flight_class: data.flight_class
     });
   }, [data]);
 
@@ -111,7 +111,6 @@ export default function Ticket({ formattedData, error }) {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [token, setToken] = useState(null);
   const [title, setTitle] = useState();
-  //TODO check insured
   const [insured, setInsured] = useState(false);
 
   const [user, setUser] = useState({
@@ -175,7 +174,7 @@ export default function Ticket({ formattedData, error }) {
         console.log("Create booking success");
         console.log(res.data.data);
         setTimeout(() => {
-          router.push("/profile/booking");
+          router.push("/booking");
         }, 2000);
       })
       .catch((err) => {
@@ -368,7 +367,7 @@ export default function Ticket({ formattedData, error }) {
                 className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 w-1/2 shadow-lg "
                 onClick={ticketForm}
               >
-                Proceed to Payment
+                Book Ticket
               </button>
             </div>
           </div>
@@ -413,7 +412,7 @@ export default function Ticket({ formattedData, error }) {
                 <div className="flex justify-between mt-2">
                   <p className="text-xs">{ticket.departure_date}</p>
                   <p className="text-xs">•</p>
-                  <p className="text-xs">{ticket.class}</p>
+                  <p className="text-xs">{ticket.flight_class}</p>
                 </div>
                 <div className="flex items-center text-ankasa-blue mt-2">
                   <MdCheckCircleOutline className="mr-2" size={20} />
@@ -424,7 +423,7 @@ export default function Ticket({ formattedData, error }) {
                   <p>Can reschedule</p>
                 </div>
                 <div className="flex w-full justify-between mt-2 font-bold">
-                  <p className="">Total Payment</p>
+                  <p className="">Ticket Price</p>
                   <p className="text-ankasa-blue"> $ {ticket.price}</p>
                 </div>
               </div>

@@ -5,7 +5,9 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import Image from "next/image";
 import axios from "axios";
 import generateBarcode from "../../../lib/barcode";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import jwtDecode from "jwt-decode";
 const url = "http://localhost:4000/";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 export async function getServerSideProps(context) {
@@ -70,7 +72,30 @@ export default function Pass({ formattedData, error }) {
     generateBarcode("barcodeCanvas", bar_id);
   }, [bar_id]);
 
-  console.log(data);
+//data user
+const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+const [token, setToken] = useState(null);
+
+const [user, setUser] = useState({
+  fullname: "Full Name",
+});
+
+useEffect(() => {
+  if (cookies.accessToken) {
+    setToken(jwtDecode(cookies.accessToken));
+  } else {
+    router.push("/auth/login");
+  }
+}, [cookies]);
+useEffect(() => {
+  if (token) {
+    setUser({
+      id: token.id,
+      fullname: token.fullname,
+    });
+  }
+}, [token]);
+
   return (
     <Layout>
       <Head>
@@ -95,12 +120,16 @@ export default function Pass({ formattedData, error }) {
                 </div>
               </div>
               <div className="flex w-auto justify-between mt-4 text-black">
+                <p>Passenger Name :</p>
+                <p className="font-semibold">{user.fullname}</p>
+              </div>
+              <div className="flex w-auto justify-between mt-4 text-black">
                 <p>Code</p>
                 <p>Class</p>
               </div>
               <div className="flex w-auto justify-between text-gray-500">
                 <p>{data.terminal} - {data.gate}</p>
-                <p>{data.class}</p>
+                <p>{data.flight_class}</p>
               </div>
               <div className="flex w-auto justify-between mt-4 text-black">
                 <p>Terminal</p>

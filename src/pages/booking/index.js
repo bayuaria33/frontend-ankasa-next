@@ -123,6 +123,59 @@ export default function Booking({ formattedData, error }) {
   const [photo, setPhoto] = useState(
     "https://res.cloudinary.com/dedas1ohg/image/upload/v1680685005/peworld_images/Default_pfp_odp1oi_ockrk2.png"
   );
+
+  const checkPaymentStatus = (data, id) => {
+    switch (data) {
+      case 0:
+        return (
+          <div className="flex items-center">
+            <div className="w-fit bg-orange-400 p-2 rounded-lg md:text-sm text-xs text-white">
+              <button
+                onClick={() => {
+                  router.push(`/payment/${id}`);
+                }}
+              >
+                Unpaid
+              </button>
+            </div>
+            <button
+              className="ml-4 text-ankasa-blue underline"
+              onClick={() => {
+                router.push(`/payment/${id}`);
+              }}
+            >
+              Pay Now
+            </button>
+          </div>
+        );
+      case 1:
+        return (
+          <div className="w-fit bg-yellow-400 p-2 rounded-lg md:text-sm text-xs text-white">
+            <button
+              onClick={() => {
+                router.push(`/payment/${id}`);
+              }}
+            >
+              Payment Pending
+            </button>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="w-fit bg-green-400 p-2 rounded-lg md:text-sm text-xs text-white">
+            <button
+              onClick={() => {
+                router.push(`/payment/${id}`);
+              }}
+            >
+              E-ticket Issued
+            </button>
+          </div>
+        );
+      default:
+        console.log("Invalid Payment Status");
+    }
+  };
   return (
     <Layout>
       <Head>
@@ -214,9 +267,7 @@ export default function Booking({ formattedData, error }) {
                 <div className="font-bold text-xl flex-row flex justify-between align-middle">
                   <div className="flex flex-row">
                     <p className="text-gray-400 md:mr-16 mr-8">Status</p>
-                    <div className="w-fit bg-orange-400 p-2 rounded-lg md:text-sm text-xs text-white">
-                      <p>Waiting for Payment</p>
-                    </div>
+                    {checkPaymentStatus(item.payment_status, item.id)}
                   </div>
                   <button className="flex align-middle text-center items-center w-40 justify-evenly">
                     <p

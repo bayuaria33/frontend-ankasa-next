@@ -11,9 +11,113 @@ import { BsCalendar3 } from "react-icons/bs";
 import { BsFillCreditCardFill } from "react-icons/bs";
 import { BsClock } from "react-icons/bs";
 import { Poppins } from "next/font/google";
+import axios from "axios";
+import { useState } from "react";
+import { Alert } from "@mui/material";
+import { useRouter } from "next/router";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
+const url = "http://localhost:4000/";
 
-export default function Payment() {
+export async function getServerSideProps(context) {
+  try {
+    const id = context.query.id;
+    const res = await axios.get(url + `bookings/${id}`);
+    const data = await res.data.data;
+    // format waktu arrival - departure
+    const formattedData = data.map((item) => {
+      const date1 = new Date(item.departure_date);
+      const date2 = new Date(item.arrival_date);
+      const formattedDate1 = date1.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
+      const formattedDate2 = date2.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+      });
+      const diffs = Math.abs(date2 - date1);
+      const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
+      const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
+      let diffStr = "";
+
+      if (diffsInHours > 0) {
+        diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
+      }
+      if (diffsInMinutes > 0) {
+        diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
+          diffsInMinutes > 1 ? "s" : ""
+        }`;
+      }
+
+      return {
+        ...item,
+        departure_date: formattedDate1,
+        arrival_date: formattedDate2,
+        diffs: diffStr,
+      };
+    });
+
+    return { props: { formattedData } };
+  } catch (error) {
+    return { props: { error: true } };
+  }
+}
+export default function Payment({ formattedData }) {
+  const router = useRouter()
+  const [errorMsg, setErrormsg] = useState();
+  const [isError, setIserror] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const data =
+    formattedData && formattedData.length && formattedData.find((obj) => true);
+  console.log(data);
+
+  const countSubTotal = (data) => {
+    let sub;
+    data.insured
+      ? (sub = data.price * data.passengers + 2)
+      : (sub = data.price * data.passengers);
+    return sub;
+  };
+
+  const countTotal = (sub) => {
+    let vat = sub * 0.2;
+    let total = sub + vat;
+    console.log("vat: ", vat, "total: ", total);
+    return total;
+  };
+
+  const formData = {
+    id: data.id,
+    status: 2,
+  };
+  const updatePayment = async () => {
+    try {
+      const res = await axios
+        .post(url + "bookings/update-payment", formData)
+        .then((res) => {
+          console.log(res.data.message);
+          setIsSuccess(true);
+          setTimeout(() => {
+            router.push("/booking");
+          }, 2000);
+        });
+    } catch (error) {
+      console.log(error);
+      setErrormsg(error);
+      setIserror(true);
+    }
+  };
   return (
     <Layout>
       <Head>
@@ -121,11 +225,12 @@ export default function Payment() {
                       <select
                         id="countries"
                         className="bg-white-50 text-black text-sm w-auto rounded-lg focus:ring-blue-500 focus:border-blue-500 block bg-gray-100 p-3 mb-6"
+                        defaultValue={1}
                       >
-                        <option selected value="" className="">
+                        <option value="1" className="">
                           Pro(Billed Monthly)
                         </option>
-                        <option value="" className="">
+                        <option value="2" className="">
                           Pro(Billed Weekly)
                         </option>
                       </select>
@@ -140,15 +245,35 @@ export default function Payment() {
                   </div>
                   <div className="flex flex-col ms-3 mt-5">
                     <div className="flex flex-row justify-between">
+                      <p>Ticket Price</p>
+                      <p>${data.price}</p>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <p>Passengers</p>
+                      <p>{data.passengers}</p>
+                    </div>
+                    <div className="flex flex-row justify-between">
+                      <p>Insurance</p>
+                      {data.insured ? <p>$2.00</p> : <p>$0.00</p>}
+                    </div>
+                    <div className="flex flex-row justify-between">
                       <p>Refferal Bonuses</p>
                       <p>-$2.00</p>
                     </div>
+                    <div className="flex flex-row justify-between mt-4">
+                      <p>Sub Total</p>
+                      <p>${countSubTotal(data)}.00</p>
+                    </div>
                     <div className="flex flex-row justify-between mt-1">
                       <div className="flex items-center">
-                        <p className="mr-2">Vat</p>
+                        <p className="mr-2">Value Added Tax</p>
                         <BsClock />
                       </div>
-                      <p>-20%</p>
+                      <p>20%</p>
+                    </div>
+                    <div className="flex flex-row justify-between mt-4 font-bold">
+                      <p>Total</p>
+                      <p>${countTotal(countSubTotal(data))}</p>
                     </div>
                   </div>
                   <div className="flex flex-col ms-3 mt-5">
@@ -160,10 +285,39 @@ export default function Payment() {
                       <p>After 30 days $9.59</p>
                     </div>
                   </div>
+                  {isError && (
+                    <Alert
+                      severity="error"
+                      className={`${poppins.className} mb-4 `}
+                    >
+                      {errorMsg}
+                    </Alert>
+                  )}
+                  {isSuccess && (
+                    <Alert
+                      severity="success"
+                      className={`${poppins.className} mb-4 `}
+                    >
+                      Payment Completed
+                    </Alert>
+                  )}
                   <div className="flex flex-col mt-5">
-                    <button className="rounded-lg w-auto p-2 text-xl drop-shadow-xl bg-blue-500 text-white">
-                      Try it free for 30 Days
-                    </button>
+                    {data.payment_status == 0 ? (
+                      <button
+                        className="rounded-lg w-auto p-2 text-xl drop-shadow-xl bg-blue-500 text-white"
+                        onClick={updatePayment}
+                      >
+                        Complete Payment
+                      </button>
+                    ) : (
+                      <button
+                        className="rounded-lg w-auto p-2 text-xl drop-shadow-xl bg-green-400 text-white"
+                        onClick={updatePayment}
+                        disabled
+                      >
+                        Payment Completed
+                      </button>
+                    )}
                   </div>
                   <div className="flex justify-center">
                     <Link className="underline text-blue-400 mt-2" href={""}>
