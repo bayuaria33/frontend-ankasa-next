@@ -256,10 +256,6 @@ export default function Payment({ formattedData }) {
                       <p>Insurance</p>
                       {data.insured ? <p>$2.00</p> : <p>$0.00</p>}
                     </div>
-                    <div className="flex flex-row justify-between">
-                      <p>Refferal Bonuses</p>
-                      <p>-$2.00</p>
-                    </div>
                     <div className="flex flex-row justify-between mt-4">
                       <p>Sub Total</p>
                       <p>${countSubTotal(data)}.00</p>

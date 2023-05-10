@@ -7,7 +7,6 @@ import { BsFillGearFill } from "react-icons/bs";
 import { BsFillDoorOpenFill } from "react-icons/bs";
 import { BsChevronRight } from "react-icons/bs";
 import { FaChevronDown } from "react-icons/fa";
-
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,6 +14,7 @@ import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { useRouter } from "next/router";
+import formatDate from "../../../lib/formatDate";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = "http://localhost:4000/";
@@ -29,49 +29,7 @@ export async function getServerSideProps(context) {
     });
     const data = await res.data.data;
     // format waktu arrival - departure
-    const formattedData = data.map((item) => {
-      const date1 = new Date(item.departure_date);
-      const date2 = new Date(item.arrival_date);
-      const formattedDate1 = date1.toLocaleDateString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-      const formattedDate2 = date2.toLocaleDateString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-      const diffs = Math.abs(date2 - date1);
-      const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
-      const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
-      let diffStr = "";
-
-      if (diffsInHours > 0) {
-        diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
-      }
-      if (diffsInMinutes > 0) {
-        diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
-          diffsInMinutes > 1 ? "s" : ""
-        }`;
-      }
-
-      return {
-        ...item,
-        departure_date: formattedDate1,
-        arrival_date: formattedDate2,
-        diffs: diffStr,
-      };
-    });
-
+    const formattedData = formatDate(data);
     return { props: { formattedData } };
   } catch (error) {
     return { props: { error: true } };
@@ -258,9 +216,9 @@ export default function Booking({ formattedData, error }) {
               <div className="w-full h-full rounded-xl bg-white mt-2 mr-1 px-3 py-4">
                 <p className="font-bold mb-2">{item.departure_date}</p>
                 <div className="flex text-2xl font-bold w-44 justify-between my-3">
-                  <p>{item.departure_country}</p>
+                  <p>{item.departure_code}</p>
                   <Image src="/plane.svg" width={36} height={36} alt="logo" />
-                  <p>{item.arrival_country}</p>
+                  <p>{item.arrival_code}</p>
                 </div>
                 <p className="font-bold text-gray-500">{item.airline_name}</p>
                 <hr className="h-px my-8 bg-gray-300 border-0 " />

@@ -66,11 +66,14 @@ const Navbar = () => {
             </svg>
             <span className="sr-only">Search icon</span>
           </div>
-          <input
+          <button
             type="text"
             id="search-navbar"
-            className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
+            className="block w-44 h-8 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
             placeholder="Search..."
+            onClick={()=>{
+              router.push("/ticket")
+            }}
           />
         </div>
         <ul className="lg:flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white hidden mx-5">
@@ -92,7 +95,11 @@ const Navbar = () => {
 
         {token ? (
           <div className="flex text-black text-sm items-center pr-10">
-            <BsEnvelope color="black" size={24} className="mx-10 md:block hidden" />
+            <BsEnvelope
+              color="black"
+              size={24}
+              className="mx-10 md:block hidden"
+            />
             <BsBell color="black" size={24} className="mx-10 md:block hidden" />
             <Link href={"/profile"}>
               <Image

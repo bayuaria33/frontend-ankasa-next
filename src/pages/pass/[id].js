@@ -8,6 +8,8 @@ import generateBarcode from "../../../lib/barcode";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
+import formatDate from "../../../lib/formatDate";
+
 const url = "http://localhost:4000/";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 export async function getServerSideProps(context) {
@@ -15,48 +17,7 @@ export async function getServerSideProps(context) {
   try {
     const res = await axios.get(url + `bookings/${id}`);
     const data = await res.data.data;
-    const formattedData = data.map((item) => {
-      const date1 = new Date(item.departure_date);
-      const date2 = new Date(item.arrival_date);
-      const formattedDate1 = date1.toLocaleDateString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-      const formattedDate2 = date2.toLocaleDateString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-      const diffs = Math.abs(date2 - date1);
-      const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
-      const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
-      let diffStr = "";
-
-      if (diffsInHours > 0) {
-        diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
-      }
-      if (diffsInMinutes > 0) {
-        diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
-          diffsInMinutes > 1 ? "s" : ""
-        }`;
-      }
-
-      return {
-        ...item,
-        departure_date: formattedDate1,
-        arrival_date: formattedDate2,
-        diffs: diffStr,
-      };
-    });
+    const formattedData = formatDate(data);
 
     return { props: { formattedData } };
   } catch (error) {
@@ -114,9 +75,9 @@ useEffect(() => {
               <div className="flex">
                 <Image src={data.photo} width={100} height={57} alt="garuda" />
                 <div className="flex text-2xl font-bold w-44 justify-between my-3 mx-6">
-                  <p>{data.departure_country}</p>
+                  <p>{data.departure_code}</p>
                   <Image src="/plane.svg" width={36} height={36} alt="logo" />
-                  <p>{data.arrival_country}</p>
+                  <p>{data.arrival_code}</p>
                 </div>
               </div>
               <div className="flex w-auto justify-between mt-4 text-black">

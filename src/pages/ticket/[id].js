@@ -16,6 +16,8 @@ import Link from "next/link";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = "http://localhost:4000/";
 export async function getServerSideProps(context) {
+  const isoCountries = require('i18n-iso-countries')
+  isoCountries.registerLocale(require('i18n-iso-countries/langs/en.json'));
   try {
     const id = context.query.id;
     const res = await axios.get(url + `tickets/${id}`);
@@ -54,12 +56,15 @@ export async function getServerSideProps(context) {
           diffsInMinutes > 1 ? "s" : ""
         }`;
       }
-
+      const arrival_code = isoCountries.getAlpha3Code(item.arrival_country, 'en')
+      const departure_code = isoCountries.getAlpha3Code(item.departure_country, 'en')
       return {
         ...item,
         departure_date: formattedDate1,
         arrival_date: formattedDate2,
         diffs: diffStr,
+        arrival_code: arrival_code,
+        departure_code: departure_code
       };
     });
 
@@ -85,6 +90,8 @@ export default function Ticket({ formattedData, error }) {
     departure_city: "City",
     departure_country: "Country",
     departure_date: "Departure Date",
+    arrival_code: "",
+    departure_code: "",
     price: "",
     flight_class: "Class"
   });
@@ -102,6 +109,8 @@ export default function Ticket({ formattedData, error }) {
       departure_city: data.departure_city,
       departure_country: data.departure_country,
       departure_date: data.departure_date,
+      arrival_code: data.arrival_code,
+      departure_code: data.departure_code,
       price: data.price,
       flight_class: data.flight_class
     });
@@ -402,11 +411,11 @@ export default function Ticket({ formattedData, error }) {
               <div className="flex-col w-4/5 text-black ">
                 <div className="flex justify-between mt-2 font-bold">
                   <p className="">
-                    {ticket.departure_city} ({ticket.departure_country})
+                    {ticket.departure_city} ({ticket.departure_code})
                   </p>
                   <FaExchangeAlt color="black" />
                   <p className="">
-                    {ticket.arrival_city} ({ticket.arrival_country})
+                    {ticket.arrival_city} ({ticket.arrival_code})
                   </p>
                 </div>
                 <div className="flex justify-between mt-2">
