@@ -125,8 +125,8 @@ export default function Ticket({ formattedData, error }) {
       airlines_id: "",
       search: "",
       transit: "",
-      p1: "",
-      p2: "",
+      p1: "0",
+      p2: "2000",
       sort: "ASC",
     });
   };
