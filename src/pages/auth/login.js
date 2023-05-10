@@ -39,6 +39,7 @@ export default function Login() {
       })
       .catch((err) => {
         console.log("Login fail");
+        console.log(err);
         console.log(err.response.data.message);
         setErrormsg(err.response.data.message);
         setIserror(true);
