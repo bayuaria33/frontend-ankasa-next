@@ -10,7 +10,7 @@ import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
 import formatDate from "../../../lib/formatDate";
 
-const url = "http://localhost:4000/";
+const url = process.env.NEXT_PUBLIC_API_URL;
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 export async function getServerSideProps(context) {
   const id = context.query.id;
@@ -28,34 +28,34 @@ export async function getServerSideProps(context) {
 export default function Pass({ formattedData, error }) {
   const data =
     formattedData && formattedData.length && formattedData.find((obj) => true);
-  const bar_id = data.id.split("-").pop() + "-" + data.terminal + data.gate
+  const bar_id = data.id.split("-").pop() + "-" + data.terminal + data.gate;
   useEffect(() => {
     generateBarcode("barcodeCanvas", bar_id);
   }, [bar_id]);
 
-//data user
-const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-const [token, setToken] = useState(null);
+  //data user
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  const [token, setToken] = useState(null);
 
-const [user, setUser] = useState({
-  fullname: "Full Name",
-});
+  const [user, setUser] = useState({
+    fullname: "Full Name",
+  });
 
-useEffect(() => {
-  if (cookies.accessToken) {
-    setToken(jwtDecode(cookies.accessToken));
-  } else {
-    router.push("/auth/login");
-  }
-}, [cookies]);
-useEffect(() => {
-  if (token) {
-    setUser({
-      id: token.id,
-      fullname: token.fullname,
-    });
-  }
-}, [token]);
+  useEffect(() => {
+    if (cookies.accessToken) {
+      setToken(jwtDecode(cookies.accessToken));
+    } else {
+      router.push("/auth/login");
+    }
+  }, [cookies]);
+  useEffect(() => {
+    if (token) {
+      setUser({
+        id: token.id,
+        fullname: token.fullname,
+      });
+    }
+  }, [token]);
 
   return (
     <Layout>
@@ -89,7 +89,9 @@ useEffect(() => {
                 <p>Class</p>
               </div>
               <div className="flex w-auto justify-between text-gray-500">
-                <p>{data.terminal} - {data.gate}</p>
+                <p>
+                  {data.terminal} - {data.gate}
+                </p>
                 <p>{data.flight_class}</p>
               </div>
               <div className="flex w-auto justify-between mt-4 text-black">
@@ -108,7 +110,10 @@ useEffect(() => {
               </div>
             </div>
             <div className="w-44 max-w-44 flex p-2 border-l-2 border-dashed">
-              <canvas className="mt-24 rotate-90 w-64 h-1/4" id="barcodeCanvas"></canvas>
+              <canvas
+                className="mt-24 rotate-90 w-64 h-1/4"
+                id="barcodeCanvas"
+              ></canvas>
             </div>
           </div>
         </div>

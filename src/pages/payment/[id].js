@@ -16,7 +16,7 @@ import { useState } from "react";
 import { Alert } from "@mui/material";
 import { useRouter } from "next/router";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-const url = "http://localhost:4000/";
+const url = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getServerSideProps(context) {
   try {
@@ -73,14 +73,13 @@ export async function getServerSideProps(context) {
   }
 }
 export default function Payment({ formattedData }) {
-  const router = useRouter()
+  const router = useRouter();
   const [errorMsg, setErrormsg] = useState();
   const [isError, setIserror] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const data =
     formattedData && formattedData.length && formattedData.find((obj) => true);
-  console.log(data);
 
   const countSubTotal = (data) => {
     let sub;
@@ -93,7 +92,6 @@ export default function Payment({ formattedData }) {
   const countTotal = (sub) => {
     let vat = sub * 0.2;
     let total = sub + vat;
-    console.log("vat: ", vat, "total: ", total);
     return total;
   };
 

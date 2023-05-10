@@ -19,7 +19,7 @@ import { useRouter } from "next/router";
 import formatDate from "../../../lib/formatDate";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-const url = "http://localhost:4000/";
+const url = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getServerSideProps() {
   try {
@@ -97,8 +97,8 @@ export default function Ticket({ formattedData, error }) {
     airlines_id: "",
     search: "",
     transit: "",
-    p1: "",
-    p2: "",
+    p1: "0",
+    p2: "2000",
     sort: "ASC",
   });
 
@@ -218,6 +218,7 @@ export default function Ticket({ formattedData, error }) {
                 className="font-bold text-ankasa-blue"
                 onClick={() => {
                   clearFilter();
+                  filterData(filter);
                 }}
               >
                 Reset

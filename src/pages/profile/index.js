@@ -15,7 +15,7 @@ import axios from "axios";
 import { Alert } from "@mui/material";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-const url = "http://localhost:4000/";
+const url = process.env.NEXT_PUBLIC_API_URL;
 export default function Profile() {
   const router = useRouter();
   const [errorMsg, setErrormsg] = useState();
@@ -36,7 +36,6 @@ export default function Profile() {
     postalcode: "Postal Code",
   });
 
-
   const handleChange = (e) => {
     setUser({
       ...user,
@@ -47,7 +46,6 @@ export default function Profile() {
   const handlePhoto = (e) => {
     setPhoto(e.target.files[0]);
     setPreview(URL.createObjectURL(e.target.files[0]));
-    console.log(e.target.files[0]);
   };
 
   const logout = () => {
@@ -102,10 +100,10 @@ export default function Profile() {
       .then((res) => {
         console.log(res);
         console.log("update profile success ");
-        setIsSuccess(true)
+        setIsSuccess(true);
         setTimeout(() => {
-          logout()
-          router.push("/auth/login")
+          logout();
+          router.push("/auth/login");
         }, 2000);
       })
       .catch((err) => {

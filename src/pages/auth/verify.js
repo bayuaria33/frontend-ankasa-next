@@ -9,7 +9,7 @@ import Head from "next/head";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Verify() {
-  const url = "http://localhost:4000/";
+  const url = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const [cookies, setCookie, removeCookie] = useCookies(["regis"]);
   const [email, setEmail] = useState("");

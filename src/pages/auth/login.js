@@ -10,7 +10,7 @@ import { Alert } from "@mui/material";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Login() {
-  const url = "http://localhost:4000/";
+  const url = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [errorMsg, setErrormsg] = useState();
@@ -97,7 +97,11 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {isError && <Alert severity="error" className={`${poppins.className} mb-4 `} >{errorMsg}</Alert> }
+            {isError && (
+              <Alert severity="error" className={`${poppins.className} mb-4 `}>
+                {errorMsg}
+              </Alert>
+            )}
           </div>
           <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
             <p className="text-white text-bold">Login</p>

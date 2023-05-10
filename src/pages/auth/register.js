@@ -12,7 +12,7 @@ const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Register() {
   const [cookies, setCookie, removeCookie] = useCookies(["regis"]);
-  const url = "http://localhost:4000/";
+  const url = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
   const [fullname, setFullname] = useState("");
   const [errorMsg, setErrormsg] = useState();
@@ -112,7 +112,11 @@ export default function Register() {
                 required
               />
             </div>
-            {isError && <Alert severity="error" className={`${poppins.className} mb-4 `} >{errorMsg}</Alert> }
+            {isError && (
+              <Alert severity="error" className={`${poppins.className} mb-4 `}>
+                {errorMsg}
+              </Alert>
+            )}
             <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
               <p className="text-white text-bold">Sign Up</p>
             </button>

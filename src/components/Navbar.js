@@ -71,8 +71,8 @@ const Navbar = () => {
             id="search-navbar"
             className="block w-44 h-8 p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none"
             placeholder="Search..."
-            onClick={()=>{
-              router.push("/ticket")
+            onClick={() => {
+              router.push("/ticket");
             }}
           />
         </div>
@@ -84,13 +84,15 @@ const Navbar = () => {
               </p>
             </Link>
           </li>
-          <li>
-            <Link href={"/booking"}>
-              <p className="block py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
-                My Bookings
-              </p>
-            </Link>
-          </li>
+          {token && (
+            <li>
+              <Link href={"/booking"}>
+                <p className="py-2 px-4 text-black font-semibold hover:border-b-2 hover:border-ankasa-blue">
+                  My Bookings
+                </p>
+              </Link>
+            </li>
+          )}
         </ul>
 
         {token ? (

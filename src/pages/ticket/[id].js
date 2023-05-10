@@ -14,10 +14,10 @@ import { Alert, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-const url = "http://localhost:4000/";
+const url = process.env.NEXT_PUBLIC_API_URL;
 export async function getServerSideProps(context) {
-  const isoCountries = require('i18n-iso-countries')
-  isoCountries.registerLocale(require('i18n-iso-countries/langs/en.json'));
+  const isoCountries = require("i18n-iso-countries");
+  isoCountries.registerLocale(require("i18n-iso-countries/langs/en.json"));
   try {
     const id = context.query.id;
     const res = await axios.get(url + `tickets/${id}`);
@@ -56,15 +56,21 @@ export async function getServerSideProps(context) {
           diffsInMinutes > 1 ? "s" : ""
         }`;
       }
-      const arrival_code = isoCountries.getAlpha3Code(item.arrival_country, 'en')
-      const departure_code = isoCountries.getAlpha3Code(item.departure_country, 'en')
+      const arrival_code = isoCountries.getAlpha3Code(
+        item.arrival_country,
+        "en"
+      );
+      const departure_code = isoCountries.getAlpha3Code(
+        item.departure_country,
+        "en"
+      );
       return {
         ...item,
         departure_date: formattedDate1,
         arrival_date: formattedDate2,
         diffs: diffStr,
         arrival_code: arrival_code,
-        departure_code: departure_code
+        departure_code: departure_code,
       };
     });
 
@@ -93,7 +99,7 @@ export default function Ticket({ formattedData, error }) {
     arrival_code: "",
     departure_code: "",
     price: "",
-    flight_class: "Class"
+    flight_class: "Class",
   });
 
   useEffect(() => {
@@ -112,7 +118,7 @@ export default function Ticket({ formattedData, error }) {
       arrival_code: data.arrival_code,
       departure_code: data.departure_code,
       price: data.price,
-      flight_class: data.flight_class
+      flight_class: data.flight_class,
     });
   }, [data]);
 

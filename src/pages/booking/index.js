@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import formatDate from "../../../lib/formatDate";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
-const url = "http://localhost:4000/";
+const url = process.env.NEXT_PUBLIC_API_URL;
 
 export async function getServerSideProps(context) {
   const { accessToken } = context.req.cookies;
@@ -37,7 +37,6 @@ export async function getServerSideProps(context) {
 }
 export default function Booking({ formattedData, error }) {
   const router = useRouter();
-  console.log(formattedData);
   const [token, setToken] = useState(null);
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [preview, setPreview] = useState("");
