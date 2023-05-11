@@ -109,8 +109,9 @@ export default function Profile() {
       .catch((err) => {
         console.log("update profile fail");
         console.log(err);
-        console.log(err.response.data.message);
-        setErrormsg(err.response.data.message);
+        // console.log(err.response.data.message);
+        // setErrormsg(err.response.data.message);
+        setErrormsg("Something went wrong");
         setIserror(true);
       });
   };
