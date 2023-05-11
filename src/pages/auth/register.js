@@ -2,11 +2,12 @@ import Image from "next/image";
 import { Poppins } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import Head from "next/head";
 import { Alert } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
@@ -17,6 +18,7 @@ export default function Register() {
   const [fullname, setFullname] = useState("");
   const [errorMsg, setErrormsg] = useState();
   const [isError, setIserror] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const formData = {
@@ -25,6 +27,8 @@ export default function Register() {
     password: password,
   };
   const registerForm = (e) => {
+    setIsLoading(true);
+    setIserror(false);
     e.preventDefault();
     axios
       .post(url + `users/register/customer`, formData, {
@@ -33,6 +37,7 @@ export default function Register() {
         },
       })
       .then((res) => {
+        setIsLoading(false);
         console.log("Register success: ", res.data.data);
         setCookie("emailotp", res.data.data.email, {
           path: "/",
@@ -43,12 +48,18 @@ export default function Register() {
         router.push("/auth/verify");
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log("Register fail");
         console.log(err.response.data.message);
         setErrormsg(err.response.data.message);
         setIserror(true);
       });
   };
+
+  useEffect(() => {
+    setIserror(false);
+    setIsLoading(false);
+  }, []);
 
   return (
     <main
@@ -116,6 +127,11 @@ export default function Register() {
               <Alert severity="error" className={`${poppins.className} mb-4 `}>
                 {errorMsg}
               </Alert>
+            )}
+            {isLoading && (
+              <div className="flex align-middle justify-center my-4">
+                <CircularProgress />
+              </div>
             )}
             <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
               <p className="text-white text-bold">Sign Up</p>

@@ -193,14 +193,14 @@ export default function Booking({ formattedData, error }) {
               <p className="font-bold">Settings</p>
               <BsChevronRight color="grey" size={20} />
             </div>
-            <div
-              className="w-full h-8 mt-2 flex-row flex p-2 items-center justify-between hover:text-red-400 hover:border-2 border-red-400"
+            <button
+              className="w-full h-8 mt-2 flex-row flex p-2 items-center justify-between hover:border-2 hover:text-red-700 rounded-lg"
               onClick={logout}
             >
               <BsFillDoorOpenFill color="grey" size={20} />
               <p className="font-bold">Logout</p>
               <BsChevronRight color="grey" size={20} />
-            </div>
+            </button>
           </div>
         </div>
 

@@ -13,8 +13,12 @@ import jwtDecode from "jwt-decode";
 import { Alert, FormControlLabel, FormGroup, Switch } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
+import formatDate from "../../../lib/formatDate";
+import CircularProgress from "@mui/material/CircularProgress";
+
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = process.env.NEXT_PUBLIC_API_URL;
+
 export async function getServerSideProps(context) {
   const isoCountries = require("i18n-iso-countries");
   isoCountries.registerLocale(require("i18n-iso-countries/langs/en.json"));
@@ -22,58 +26,7 @@ export async function getServerSideProps(context) {
     const id = context.query.id;
     const res = await axios.get(url + `tickets/${id}`);
     const data = await res.data.data;
-    const formattedData = data.map((item) => {
-      const date1 = new Date(item.departure_date);
-      const date2 = new Date(item.arrival_date);
-      const formattedDate1 = date1.toLocaleDateString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-      const formattedDate2 = date2.toLocaleDateString("id-ID", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-      });
-      const diffs = Math.abs(date2 - date1);
-      const diffsInHours = Math.floor(diffs / (1000 * 60 * 60));
-      const diffsInMinutes = Math.floor((diffs / (1000 * 60)) % 60);
-      let diffStr = "";
-
-      if (diffsInHours > 0) {
-        diffStr += `${diffsInHours} hour${diffsInHours > 1 ? "s" : ""}`;
-      }
-      if (diffsInMinutes > 0) {
-        diffStr += `${diffStr ? " " : ""}${diffsInMinutes} minute${
-          diffsInMinutes > 1 ? "s" : ""
-        }`;
-      }
-      const arrival_code = isoCountries.getAlpha3Code(
-        item.arrival_country,
-        "en"
-      );
-      const departure_code = isoCountries.getAlpha3Code(
-        item.departure_country,
-        "en"
-      );
-      return {
-        ...item,
-        departure_date: formattedDate1,
-        arrival_date: formattedDate2,
-        diffs: diffStr,
-        arrival_code: arrival_code,
-        departure_code: departure_code,
-      };
-    });
-
+    const formattedData = formatDate(data);
     return { props: { formattedData } };
   } catch (error) {
     return { props: { error: true } };
@@ -83,6 +36,7 @@ export async function getServerSideProps(context) {
 export default function Ticket({ formattedData, error }) {
   const [errorMsg, setErrormsg] = useState();
   const [isError, setIserror] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   //data ticket
   const data =
     formattedData && formattedData.length && formattedData.find((obj) => true);
@@ -103,6 +57,7 @@ export default function Ticket({ formattedData, error }) {
   });
 
   useEffect(() => {
+    setIsLoading(false);
     if (!data) {
       return <p>Error!</p>;
     }
@@ -178,6 +133,8 @@ export default function Ticket({ formattedData, error }) {
     insured: insured,
   };
   const ticketForm = (e) => {
+    setIsLoading(true);
+    setIserror(false);
     e.preventDefault();
     axios
       .post(url + `bookings/`, formData, {
@@ -186,6 +143,7 @@ export default function Ticket({ formattedData, error }) {
         },
       })
       .then((res) => {
+        setIsLoading(false);
         console.log("Create booking success");
         console.log(res.data.data);
         setTimeout(() => {
@@ -193,6 +151,7 @@ export default function Ticket({ formattedData, error }) {
         }, 2000);
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log("Create booking fail");
         console.log(err);
         console.log(err.response.data.error);
@@ -376,6 +335,11 @@ export default function Ticket({ formattedData, error }) {
               <Alert severity="error" className={`${poppins.className} my-4 `}>
                 {errorMsg ? errorMsg : <p>Something Went Wrong</p>}
               </Alert>
+            )}
+            {isLoading && (
+              <div className="flex align-middle justify-center my-4">
+                <CircularProgress />
+              </div>
             )}
             <div className="flex w-full h-auto justify-center">
               <button

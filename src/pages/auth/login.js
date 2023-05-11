@@ -7,6 +7,7 @@ import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
 import { Alert } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 
 export default function Login() {
@@ -15,6 +16,7 @@ export default function Login() {
   const [cookies, setCookie, removeCookie] = useCookies(["user"]);
   const [errorMsg, setErrormsg] = useState();
   const [isError, setIserror] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const formData = {
@@ -22,6 +24,8 @@ export default function Login() {
     password: password,
   };
   const loginForm = (e) => {
+    setIsLoading(true);
+    setIserror(false)
     e.preventDefault();
     axios
       .post(url + `users/login`, formData, {
@@ -30,6 +34,7 @@ export default function Login() {
         },
       })
       .then((res) => {
+        setIsLoading(false);
         console.log("Login success");
         console.log(res.data.data);
         setCookie("accessToken", res.data.data.accessToken, {
@@ -38,6 +43,7 @@ export default function Login() {
         router.replace("/");
       })
       .catch((err) => {
+        setIsLoading(false);
         console.log("Login fail");
         console.log(err);
         console.log(err.response.data.message);
@@ -47,6 +53,7 @@ export default function Login() {
   };
   useEffect(() => {
     setIserror(false);
+    setIsLoading(false);
   }, []);
   return (
     <main className={`md:flex min-h-screen md:flex-row ${poppins.className}`}>
@@ -102,6 +109,11 @@ export default function Login() {
               <Alert severity="error" className={`${poppins.className} mb-4 `}>
                 {errorMsg}
               </Alert>
+            )}
+            {isLoading && (
+              <div className="flex align-middle justify-center">
+                <CircularProgress />
+              </div>
             )}
           </div>
           <button className="bg-ankasa-blue w-full h-16 rounded-md drop-shadow-md">
