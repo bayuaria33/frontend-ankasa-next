@@ -9,4 +9,7 @@ module.exports = {
       },
     ],
   },
+  env: {
+    NEXT_PUBLIC_API_UR: process.env.NEXT_PUBLIC_API_UR,
+  },
 }
