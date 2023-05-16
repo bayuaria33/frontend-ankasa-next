@@ -7,7 +7,15 @@ export const Trending = () => {
     <div className="md:px-16 px-4 my-6">
       <p className="md:block text-md hidden text-ankasa-blue">TRENDING</p>
       <p className="text-2xl text-black md:font-bold">Trending Destinations</p>
-      <div className="h-64 w-52 bg-gray-500 rounded-2xl mx-4 md:hidden flex"></div>
+      <div
+        className="h-72 w-52 rounded-2xl flex-col justify-end p-3 text-xl font-bold text-white md:hidden flex"
+        style={{
+          backgroundImage: `url(${bar.src})`,
+        }}
+      >
+        <p>Barcelona,</p>
+        <p>Spain</p>
+      </div>
       <div className="text-black my-4 hidden md:flex justify-center">
         {/* 1 */}
         <div
@@ -75,10 +83,23 @@ export const Popular = () => {
           Top 10 destinations
         </p>
       </div>
-      <div className="md:hidden h-64 w-52 bg-gray-500 rounded-2xl"></div>
       <div
-        className="text-white flex my-4 md:w-full md:h-96 md:bg-ankasa-blue md:rounded-2xl p-6"
-        style={{ backgroundImage: `url(${planes.src})`, backgroundRepeat:`no-repeat` }}
+        className="h-72 w-52 rounded-2xl flex-col justify-end p-3 text-xl font-bold text-white md:hidden flex"
+        style={{
+          backgroundImage: `url(${jpn.src})`,
+          backgroundPosition: `center`,
+          backgroundSize: `cover`,
+        }}
+      >
+        <p>Tokyo,</p>
+        <p>Japan</p>
+      </div>
+      <div
+        className="text-white hidden md:flex my-4 md:w-full md:h-96 md:bg-ankasa-blue md:rounded-2xl p-6"
+        style={{
+          backgroundImage: `url(${planes.src})`,
+          backgroundRepeat: `no-repeat`,
+        }}
       >
         <div className="w-full">
           <div className="flex-col h-auto ">
