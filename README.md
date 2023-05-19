@@ -74,7 +74,7 @@ Before going to the installation stage there are some software that must be inst
 - [Backend Repository](https://github.com/bayuaria33/backend-ankasa)
 
 ## Link APP
-- [Website](https://frontend-ankasa-next-j6u4sb600-bayuaria33.vercel.app/)
+- [Website](https://frontend-ankasa-next.vercel.app/)
 
 
 ## Tech Stack
