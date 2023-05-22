@@ -17,6 +17,7 @@ import { Slider } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/router";
 import formatDate from "../../../lib/formatDate";
+import planes from "../../../public/illustration.svg";
 
 const poppins = Poppins({ weight: "400", subsets: ["latin"] });
 const url = process.env.NEXT_PUBLIC_API_URL;
@@ -177,14 +178,16 @@ export default function Ticket({ formattedData, error }) {
       </Head>
       <main className={` ${poppins.className} bg-ankasa-grey text-black`}>
         {/* top */}
-        <div className="h-44 w-full bg-ankasa-blue rounded-b-2xl px-6 flex flex-row items-center justify-between">
+        <div
+          className="h-44 w-full bg-ankasa-blue rounded-b-2xl flex flex-row items-center justify-between"
+          style={{
+            backgroundImage: `url(${planes.src})`,
+            backgroundRepeat: `no-repeat`,
+            backgroundSize:'50%',
+            backgroundPosition:'center'
+          }}
+        >
           <div className="flex items-center">
-            <Image
-              width={176}
-              height={176}
-              src={"/illustration.svg"}
-              alt="logo"
-            />
             <div className="w-72  p-2 flex-col ml-16">
               <p className="text-white font-bold text-xl">Filters: </p>
               <div className="flex justify-between mt-2">
@@ -625,24 +628,21 @@ export default function Ticket({ formattedData, error }) {
                         </p>
                       </div>
                     </div>
-                    <div>
+                    <div className="hidden md:block">
                       <p>{item.diffs}</p>
                       <p>{item.transit}</p>
                     </div>
-                    <div className="flex w-40  justify-evenly">
+                    <div className="w-40  justify-evenly hidden md:block">
                       {validateFacilities(item.facilities)}
-                      {/* <MdLuggage size={24} />
-                      <MdFastfood size={24} />
-                      <MdWifi size={24} /> */}
                     </div>
-                    <div className="flex">
+                    <div className="hidden md:block">
                       <p className="font-bold text-ankasa-blue mr-2">
                         $ {item.price}
                       </p>
                       <span> /pax</span>
                     </div>
                     <button
-                      className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end w-32 shadow-lg"
+                      className="rounded-xl bg-ankasa-blue text-white text-md font-bold p-3 my-4 self-end md:w-32 w-18 shadow-lg"
                       onClick={() => {
                         router.push(`/ticket/${item.id}`);
                       }}

@@ -361,9 +361,9 @@ export default function Ticket({ formattedData, error }) {
               </Alert>
             )}
 
-            <div className="w-full flex justify-between px-2 items-center">
-              <p className="text-lg font-bold text-white">Flight Details</p>
-              <p className="text-sm font-bold text-white">View Details</p>
+            <div className="w-full flex justify-between px-2 items-center font-bold text-black md:text-white">
+              <p className="text-lg">Flight Details</p>
+              <p className="text-sm">View Details</p>
             </div>
             {/* ticket1 */}
             <div className="w-full h-auto rounded-xl bg-white mt-2 mr-1 px-3 py-4 flex flex-col">
