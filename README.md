@@ -80,6 +80,19 @@ Before going to the installation stage there are some software that must be inst
 ## Tech Stack
 This web app was built with: NextJS, ExpressJS, PostgreSQL, React, NodeJS, TailwindCSS, MaterialUI, Axios, JWT 
 
+<br></br>
+
+## Demo User Account
+<details>
+<summary>Show Demo Account</summary>
+
+
+**Email** : budi123@email.id
+
+**Password** : 123
+</details>
+
+<br></br>
 
 ## Screenshots
 
